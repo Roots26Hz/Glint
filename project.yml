@@ -1,0 +1,35 @@
+name: iNotch
+options:
+  bundleIdPrefix: com.rutav
+  deploymentTarget:
+    macOS: "26.0"
+  createIntermediateGroups: true
+
+targets:
+  iNotch:
+    type: application
+    platform: macOS
+    sources:
+      - iNotch
+    info:
+      path: iNotch/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: iNotch
+        LSUIElement: true
+        NSAppleEventsUsageDescription: iNotch reads what's playing in Apple Music and controls playback from the notch.
+        NSBluetoothAlwaysUsageDescription: iNotch shows a notch banner when a Bluetooth device connects.
+        LSApplicationCategoryType: public.app-category.utilities
+    entitlements:
+      path: iNotch/Resources/iNotch.entitlements
+      properties:
+        com.apple.security.automation.apple-events: true
+    settings:
+      base:
+        SWIFT_VERSION: "5.0"
+        MACOSX_DEPLOYMENT_TARGET: "26.0"
+        PRODUCT_BUNDLE_IDENTIFIER: com.rutav.iNotch
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_HARDENED_RUNTIME: false
+        COMBINE_HIDPI_IMAGES: true
