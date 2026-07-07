@@ -87,10 +87,40 @@ Works even when nothing's playing, so you can **start playback without ever open
 
 <div align="center">
 
-| Compact live activity | Expanded player | Volume HUD |
-| :---: | :---: | :---: |
-| ![Compact](docs/compact.png) | ![Expanded](docs/expanded.png) | ![Volume](docs/volume.png) |
-| *album art + live equalizer* | *full glass player, artwork-tinted* | *speaker glyph + level bar* |
+<img src="docs/expanded.png" width="660" alt="Expanded Liquid Glass player">
+
+**Hover the notch → the full glass player drops down.** Artwork, seekable progress bar, and springy transport controls — tinted end to end by the album's dominant color.
+
+<br>
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/compact.png" width="100%" alt="Compact live activity"><br>
+      <b>🎵 Compact live activity</b><br>
+      <sub>album art + a <b>real-audio equalizer</b>, tinted to the cover</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/volume.png" width="100%" alt="Volume HUD"><br>
+      <b>🔊 Volume HUD</b><br>
+      <sub>speaker glyph + level bar — replaces the macOS pill<br>(brightness mirrors it, sun glyph and all)</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/bluetooth.png" width="100%" alt="Bluetooth connection banner"><br>
+      <b>🎧 Bluetooth banner</b><br>
+      <sub>device name, icon, and battery % on connect</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/charger.png" width="100%" alt="Charger / battery banner"><br>
+      <b>🔋 Charger &amp; battery banner</b><br>
+      <sub>plug / unplug, low-battery, fully-charged &amp; charge-limit</sub>
+    </td>
+  </tr>
+</table>
+
+<sub><i>All five states are real translucent Liquid Glass over your windows and wallpaper — the idle notch stays pure black.</i></sub>
 
 </div>
 

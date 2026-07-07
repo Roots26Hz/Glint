@@ -42,6 +42,20 @@ struct NotchContainerView: View {
                     content
                         .padding(.horizontal, topRadius)
                 }
+                .overlay(alignment: .top) {
+                    // The hardware notch physically blacks out this rect, so
+                    // painting it changes nothing to the eye — but screenshots
+                    // and recordings capture the framebuffer *behind* the
+                    // bezel, and without this they show glass where a viewer
+                    // sees black.
+                    NotchShape(topRadius: 6, bottomRadius: 11)
+                        .fill(.black)
+                        .frame(
+                            width: viewModel.notchSize.width + 12,
+                            height: viewModel.notchSize.height
+                        )
+                        .allowsHitTesting(false)
+                }
                 .clipShape(shape)
                 .shadow(
                     color: .black.opacity(viewModel.mode == .idle ? 0 : 0.55),
