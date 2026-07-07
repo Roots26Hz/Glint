@@ -1,3 +1,4 @@
+import AppKit
 import CoreGraphics
 import Foundation
 
@@ -25,6 +26,11 @@ final class BrightnessMonitor {
     private let displayID: CGDirectDisplayID
     private var lastLevel: Float?
     private var timer: Timer?
+    /// When a brightness key was last pressed. Polled level changes only
+    /// surface as events shortly after a key press, so auto-brightness
+    /// (ambient light) adjustments never pop the HUD.
+    private var lastKeyPress = Date.distantPast
+    private var keyTap: CFMachPort?
 
     init() {
         let handle = dlopen(
@@ -44,10 +50,78 @@ final class BrightnessMonitor {
         lastLevel = readLevel()
         if getBrightness != nil {
             startPolling()
+            startKeyMonitor()
         }
     }
 
-    private static func builtInDisplayID() -> CGDirectDisplayID {
+    /// Brightness keys arrive as system-defined "aux control button" events;
+    /// they are the manual-change signal that gates the HUD. NSEvent's global
+    /// monitor never delivers them (verified on macOS 26 even with
+    /// Accessibility trust), and listen-only taps additionally demand the
+    /// Input Monitoring permission — so use an *active* CGEvent tap, which
+    /// the existing Accessibility grant covers, and pass every event through
+    /// untouched. Fails soft (the HUD just never appears) without trust.
+    private func startKeyMonitor() {
+        if Preferences.brightnessHUDEnabled, !AXIsProcessTrusted() {
+            let options = [
+                kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true
+            ] as CFDictionary
+            AXIsProcessTrustedWithOptions(options)
+        }
+
+        let callback: CGEventTapCallBack = { _, type, cgEvent, refcon in
+            let passthrough = Unmanaged.passUnretained(cgEvent)
+            guard let refcon else { return passthrough }
+            let monitor = Unmanaged<BrightnessMonitor>.fromOpaque(refcon).takeUnretainedValue()
+            // The tap's run-loop source lives on the main run loop, so this
+            // callback is main-thread.
+            MainActor.assumeIsolated {
+                monitor.handleTapEvent(type: type, cgEvent: cgEvent)
+            }
+            return passthrough
+        }
+        guard let tap = CGEvent.tapCreate(
+            tap: .cgSessionEventTap,
+            place: .headInsertEventTap,
+            options: .defaultTap,
+            eventsOfInterest: CGEventMask(1 << 14), // NX_SYSDEFINED
+            callback: callback,
+            userInfo: Unmanaged.passUnretained(self).toOpaque()
+        ) else { return }
+        keyTap = tap
+        let source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
+        CFRunLoopAddSource(CFRunLoopGetMain(), source, .commonModes)
+        CGEvent.tapEnable(tap: tap, enable: true)
+    }
+
+    private func handleTapEvent(type: CGEventType, cgEvent: CGEvent) {
+        // The system disables taps it thinks are unresponsive; just re-arm.
+        if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
+            if let keyTap {
+                CGEvent.tapEnable(tap: keyTap, enable: true)
+            }
+            return
+        }
+        guard
+            let event = NSEvent(cgEvent: cgEvent),
+            event.subtype.rawValue == 8 // aux control buttons
+        else { return }
+        let keyCode = (event.data1 & 0xFFFF_0000) >> 16
+        let isKeyDown = (event.data1 & 0x0000_FF00) >> 8 == 0x0A
+        // NX_KEYTYPE_BRIGHTNESS_UP = 2, NX_KEYTYPE_BRIGHTNESS_DOWN = 3
+        guard isKeyDown, keyCode == 2 || keyCode == 3 else { return }
+        lastKeyPress = Date()
+    }
+
+    /// MediaKeyInterceptor consumes brightness keys before this monitor's
+    /// session-level tap can see them; it reports them here instead so the
+    /// HUD gate still opens (and the new level shows immediately).
+    func noteBrightnessKey() {
+        lastKeyPress = Date()
+        poll()
+    }
+
+    static func builtInDisplayID() -> CGDirectDisplayID {
         var displays = [CGDirectDisplayID](repeating: 0, count: 8)
         var count: UInt32 = 0
         CGGetOnlineDisplayList(UInt32(displays.count), &displays, &count)
@@ -82,7 +156,11 @@ final class BrightnessMonitor {
         if let last = lastLevel, abs(level - last) < 0.01 { return }
         let isFirst = lastLevel == nil
         lastLevel = level
-        if !isFirst {
+        // Only changes that closely follow a brightness key press are shown;
+        // the 1 s window covers the system's post-press brightness ramp.
+        // lastLevel is still updated above so silent auto-brightness drift
+        // can't pile up into a later spurious delta.
+        if !isFirst, Date().timeIntervalSince(lastKeyPress) < 1.0 {
             onEvent?(BrightnessEvent(level: level))
         }
     }

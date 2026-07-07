@@ -6,7 +6,7 @@ struct iNotchApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {
-        MenuBarExtra("iNotch", systemImage: "sparkles.rectangle.stack") {
+        MenuBarExtra("iNotch", image: "MenuBarIcon") {
             SettingsLink {
                 Text("Settings…")
             }
@@ -56,6 +56,7 @@ enum DockIcon {
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var windowController: NotchWindowController?
     private var viewModel: NotchViewModel?
+    private var mediaKeyInterceptor: MediaKeyInterceptor?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Preferences.register()
@@ -71,6 +72,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         )
         self.viewModel = viewModel
         windowController = NotchWindowController(viewModel: viewModel)
+
+        // Consumes volume/brightness keys (when enabled) so the system
+        // overlay never appears; the notch HUDs are driven through the
+        // monitors' usual paths.
+        let interceptor = MediaKeyInterceptor()
+        interceptor.onVolumeChange = { [weak volume] in volume?.showCurrentState() }
+        interceptor.onBrightnessChange = { [weak brightness] in brightness?.noteBrightnessKey() }
+        mediaKeyInterceptor = interceptor
 
         NotificationCenter.default.addObserver(
             forName: NSWindow.willCloseNotification, object: nil, queue: .main

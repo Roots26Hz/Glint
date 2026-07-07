@@ -26,6 +26,8 @@
 	<true/>
 	<key>NSAppleEventsUsageDescription</key>
 	<string>iNotch reads what's playing in Apple Music and controls playback from the notch.</string>
+	<key>NSAudioCaptureUsageDescription</key>
+	<string>iNotch analyzes Apple Music's audio to animate the notch equalizer to the song.</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>iNotch shows a notch banner when a Bluetooth device connects.</string>
 </dict>

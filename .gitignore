@@ -10,6 +10,9 @@ xcuserdata/
 DerivedData/
 build/
 
+# Release artifacts (scripts/package-dmg.sh output)
+dist/
+
 # Swift Package Manager
 .swiftpm/
 .build/

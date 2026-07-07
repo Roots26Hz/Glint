@@ -34,7 +34,9 @@ struct BatteryNotificationView: View {
 
     private var percentage: Int {
         switch event {
-        case .pluggedIn(let p), .unplugged(let p), .lowBattery(let p): return p
+        case .pluggedIn(let p), .unplugged(let p), .lowBattery(let p),
+             .fullyCharged(let p), .chargeLimited(let p):
+            return p
         }
     }
 
@@ -43,12 +45,14 @@ struct BatteryNotificationView: View {
         case .pluggedIn: return "Charging"
         case .unplugged: return "On Battery"
         case .lowBattery: return "Low Battery"
+        case .fullyCharged: return "Fully Charged"
+        case .chargeLimited: return "Charge Limit"
         }
     }
 
     private var tint: Color {
         switch event {
-        case .pluggedIn: return .green
+        case .pluggedIn, .fullyCharged, .chargeLimited: return .green
         case .unplugged: return .white
         case .lowBattery: return percentage <= 10 ? .red : .orange
         }
@@ -56,9 +60,9 @@ struct BatteryNotificationView: View {
 
     private var symbol: String {
         switch event {
-        case .pluggedIn:
+        case .pluggedIn, .fullyCharged:
             return "battery.100percent.bolt"
-        case .unplugged, .lowBattery:
+        case .unplugged, .lowBattery, .chargeLimited:
             let level = max(0, min(100, percentage))
             let bucket = [0, 25, 50, 75, 100].min { abs($0 - level) < abs($1 - level) } ?? 100
             return "battery.\(bucket)percent"

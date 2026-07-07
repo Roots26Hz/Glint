@@ -1,7 +1,8 @@
 import SwiftUI
 
 /// Compact-style Bluetooth banner: device name in the left ear, device-kind
-/// glyph and "Connected" in the right ear, iOS pairing-banner style.
+/// glyph and battery percentage in the right ear, iOS pairing-banner style
+/// ("Connected" stands in when the device doesn't report battery).
 struct BluetoothNotificationView: View {
     var event: BluetoothEvent
     var notchSize: CGSize
@@ -21,18 +22,44 @@ struct BluetoothNotificationView: View {
             Spacer(minLength: notchSize.width - 40)
 
             HStack(spacing: 5) {
-                Text("Connected")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Self.blue)
                 Image(systemName: symbol)
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(Self.blue)
+                if let battery = event.battery {
+                    Text("\(battery)%")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.white)
+                    Image(systemName: Self.batterySymbol(for: battery))
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(battery <= 20 ? .red : .green)
+                } else {
+                    Text("Connected")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(Self.blue)
+                }
             }
             .padding(.trailing, 15)
         }
         .frame(height: notchSize.height)
         .accessibilityElement()
-        .accessibilityLabel("\(event.name) connected")
+        .accessibilityLabel(accessibilityText)
+    }
+
+    private var accessibilityText: String {
+        if let battery = event.battery {
+            return "\(event.name) connected, \(battery) percent battery"
+        }
+        return "\(event.name) connected"
+    }
+
+    private static func batterySymbol(for percent: Int) -> String {
+        switch percent {
+        case 88...: return "battery.100percent"
+        case 63...: return "battery.75percent"
+        case 38...: return "battery.50percent"
+        case 11...: return "battery.25percent"
+        default: return "battery.0percent"
+        }
     }
 
     private var symbol: String {

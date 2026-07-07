@@ -7,6 +7,9 @@ struct ExpandedMusicView: View {
     var notchHeight: CGFloat
 
     @Namespace private var glassSpace
+    // Tap counters so the skip glyphs bounce on every press.
+    @State private var skipBackTaps = 0
+    @State private var skipForwardTaps = 0
 
     private var hasTrack: Bool { !music.title.isEmpty }
 
@@ -75,55 +78,117 @@ struct ExpandedMusicView: View {
 
     private var controls: some View {
         HStack(spacing: 2) {
-            // Skip buttons are meaningless without a track; play still works
-            // (it launches Music and resumes the last playback context).
+            // Skip/shuffle/repeat are meaningless without a track; play still
+            // works (it launches Music and resumes the last playback context).
             if hasTrack {
-                transportButton("backward.fill", label: "Previous Track", size: 13) {
+                toggleButton(
+                    "shuffle", label: "Shuffle", isOn: music.shuffleEnabled,
+                    bounce: music.shuffleEnabled
+                ) {
+                    music.toggleShuffle()
+                }
+                transportButton("backward.fill", label: "Previous Track", size: 13, bounce: skipBackTaps) {
+                    skipBackTaps += 1
                     music.previousTrack()
                 }
-                .transition(.opacity.combined(with: .scale(scale: 0.6)))
             }
-            transportButton(
-                music.isPlaying ? "pause.fill" : "play.fill",
-                label: music.isPlaying ? "Pause" : "Play",
-                size: 17, prominent: true
-            ) {
-                music.playPause()
-            }
+            playPauseButton
             if hasTrack {
-                transportButton("forward.fill", label: "Next Track", size: 13) {
+                transportButton("forward.fill", label: "Next Track", size: 13, bounce: skipForwardTaps) {
+                    skipForwardTaps += 1
                     music.nextTrack()
                 }
-                .transition(.opacity.combined(with: .scale(scale: 0.6)))
+                toggleButton(
+                    music.repeatMode == .one ? "repeat.1" : "repeat",
+                    label: "Repeat", isOn: music.repeatMode != .off,
+                    bounce: music.repeatMode
+                ) {
+                    music.cycleRepeat()
+                }
             }
         }
         .animation(.spring(response: 0.35, dampingFraction: 0.8), value: hasTrack)
     }
 
+    private var playPauseButton: some View {
+        Button {
+            music.playPause()
+        } label: {
+            Image(systemName: music.isPlaying ? "pause.fill" : "play.fill")
+                .font(.system(size: 17, weight: .bold))
+                .foregroundStyle(.white)
+                // Morph play ⇄ pause layer-by-layer instead of swapping.
+                .contentTransition(.symbolEffect(.replace.downUp.byLayer))
+                .animation(.spring(response: 0.3, dampingFraction: 0.75), value: music.isPlaying)
+                .frame(width: 40, height: 40)
+                .glassEffect(
+                    .regular.tint(music.artworkColor.opacity(0.35)).interactive(),
+                    in: Circle()
+                )
+                // A stable ID — keying on the symbol would change the ID on
+                // every toggle and defeat the glass morph.
+                .glassEffectID("playpause", in: glassSpace)
+                .padding(2)
+                .contentShape(Circle())
+        }
+        .buttonStyle(PressableButtonStyle())
+        .accessibilityLabel(music.isPlaying ? "Pause" : "Play")
+    }
+
     private func transportButton(
-        _ symbol: String, label: String, size: CGFloat, prominent: Bool = false,
+        _ symbol: String, label: String, size: CGFloat, bounce: some Equatable,
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
             Image(systemName: symbol)
                 .font(.system(size: size, weight: .bold))
                 .foregroundStyle(.white)
-                .frame(width: prominent ? 40 : 32, height: prominent ? 40 : 32)
-                .glassEffect(
-                    prominent
-                        ? .regular.tint(music.artworkColor.opacity(0.35)).interactive()
-                        : .regular.interactive(),
-                    in: Circle()
-                )
-                // A stable ID for play/pause — keying on the symbol would
-                // change the ID on every toggle and defeat the glass morph.
-                .glassEffectID(prominent ? "playpause" : symbol, in: glassSpace)
-                // Pad the hit region out to 44×44 beyond the visible circle.
-                .padding(prominent ? 2 : 6)
+                .symbolEffect(.bounce, options: .speed(1.4), value: bounce)
+                .frame(width: 32, height: 32)
+                .glassEffect(.regular.interactive(), in: Circle())
+                .glassEffectID(symbol, in: glassSpace)
+                // Pad the hit region out beyond the visible circle.
+                .padding(6)
                 .contentShape(Circle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PressableButtonStyle())
         .accessibilityLabel(label)
+        .transition(.opacity.combined(with: .scale(scale: 0.6)))
+    }
+
+    /// Shuffle / repeat: smaller circles whose glyph lights up in the artwork
+    /// color while active.
+    private func toggleButton(
+        _ symbol: String, label: String, isOn: Bool, bounce: some Equatable,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.system(size: 11, weight: .bold))
+                .foregroundStyle(isOn ? music.artworkColor : .white.opacity(0.75))
+                .symbolEffect(.bounce, options: .speed(1.4), value: bounce)
+                .contentTransition(.symbolEffect(.replace))
+                .animation(.smooth(duration: 0.25), value: isOn)
+                .frame(width: 24, height: 24)
+                .glassEffect(.regular.interactive(), in: Circle())
+                .glassEffectID(label, in: glassSpace)
+                .padding(6)
+                .contentShape(Circle())
+        }
+        .buttonStyle(PressableButtonStyle())
+        .accessibilityLabel(label)
+        .accessibilityAddTraits(isOn ? .isSelected : [])
+        .transition(.opacity.combined(with: .scale(scale: 0.6)))
+    }
+}
+
+/// Springy press feedback shared by all transport buttons: the whole glass
+/// circle squeezes while pressed and pops back on release.
+private struct PressableButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.85 : 1)
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
     }
 }
 

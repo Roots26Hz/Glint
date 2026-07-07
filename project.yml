@@ -18,6 +18,7 @@ targets:
         LSUIElement: true
         NSAppleEventsUsageDescription: iNotch reads what's playing in Apple Music and controls playback from the notch.
         NSBluetoothAlwaysUsageDescription: iNotch shows a notch banner when a Bluetooth device connects.
+        NSAudioCaptureUsageDescription: iNotch analyzes Apple Music's audio to animate the notch equalizer to the song.
         LSApplicationCategoryType: public.app-category.utilities
     entitlements:
       path: iNotch/Resources/iNotch.entitlements
@@ -29,7 +30,11 @@ targets:
         MACOSX_DEPLOYMENT_TARGET: "26.0"
         PRODUCT_BUNDLE_IDENTIFIER: com.rutav.iNotch
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        CODE_SIGN_IDENTITY: "-"
-        CODE_SIGN_STYLE: Automatic
+        # A stable identity (not ad-hoc "-"): ad-hoc re-signing gives the app
+        # a new identity every build, and macOS silently drops its TCC grants
+        # (Accessibility, Music automation, audio capture) each time.
+        CODE_SIGN_IDENTITY: "Apple Development"
+        DEVELOPMENT_TEAM: VB36X5XLGX
+        CODE_SIGN_STYLE: Manual
         ENABLE_HARDENED_RUNTIME: false
         COMBINE_HIDPI_IMAGES: true

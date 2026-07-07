@@ -8,18 +8,36 @@ struct SettingsView: View {
     @AppStorage(Preferences.batteryEnabledKey) private var batteryEnabled = true
     @AppStorage(Preferences.volumeHUDEnabledKey) private var volumeHUDEnabled = true
     @AppStorage(Preferences.brightnessHUDEnabledKey) private var brightnessHUDEnabled = true
+    @AppStorage(Preferences.hideSystemHUDKey) private var hideSystemHUD = true
     @AppStorage(Preferences.bluetoothEnabledKey) private var bluetoothEnabled = true
+    @AppStorage(Preferences.musicWaveStyleKey) private var musicWaveStyle = Preferences.musicWaveStyleEqualizer
+    @AppStorage(Preferences.musicLingerDurationKey) private var musicLingerDuration = 120.0
 
     var body: some View {
         Form {
             Section {
                 Toggle("Show Apple Music live activity", isOn: $musicEnabled)
 
+                Picker("Soundwave style", selection: $musicWaveStyle) {
+                    Text("Equalizer (live audio)").tag(Preferences.musicWaveStyleEqualizer)
+                    Text("Visualizer (animated)").tag(Preferences.musicWaveStyleVisualizer)
+                }
+
                 HStack {
                     Slider(value: $hoverDelay, in: 0...1, step: 0.05) {
                         Text("Hover expand delay")
                     }
                     Text(String(format: "%.2fs", hoverDelay))
+                        .monospacedDigit()
+                        .foregroundStyle(.secondary)
+                        .frame(width: 48, alignment: .trailing)
+                }
+
+                HStack {
+                    Slider(value: $musicLingerDuration, in: 15...300, step: 15) {
+                        Text("Keep paused player visible")
+                    }
+                    Text(Self.minutesSeconds(musicLingerDuration))
                         .monospacedDigit()
                         .foregroundStyle(.secondary)
                         .frame(width: 48, alignment: .trailing)
@@ -38,6 +56,15 @@ struct SettingsView: View {
                 Toggle("Show brightness changes in the notch", isOn: $brightnessHUDEnabled)
             } header: {
                 Label("Display", systemImage: "sun.max.fill")
+            }
+
+            Section {
+                Toggle("Hide the system volume/brightness overlay", isOn: $hideSystemHUD)
+                Text("iNotch handles the volume and brightness keys itself, so macOS never shows its own overlay under the menu bar — the notch HUDs are the only ones. Needs the Accessibility permission; takes effect immediately.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } header: {
+                Label("System overlay", systemImage: "rectangle.slash")
             }
 
             Section {
@@ -84,5 +111,10 @@ struct SettingsView: View {
         // Surface the dock icon while settings are open (hidden again by
         // AppDelegate when this window closes).
         .onAppear { DockIcon.show() }
+    }
+
+    private static func minutesSeconds(_ seconds: Double) -> String {
+        let total = Int(seconds)
+        return String(format: "%d:%02d", total / 60, total % 60)
     }
 }

@@ -10,8 +10,6 @@ struct VolumeEvent: Equatable {
 /// Watches the default output device's volume and mute state via CoreAudio
 /// and reports changes through `onEvent`, mirroring BatteryMonitor's pattern.
 ///
-/// macOS still shows its own volume bezel alongside ours; suppressing it
-/// would require private OSDUIHelper hacks and is deliberately out of scope.
 /// Devices that expose no main volume control (some external DACs) are
 /// skipped gracefully — the HUD simply never shows for them.
 @MainActor
@@ -21,17 +19,18 @@ final class VolumeMonitor {
     private var deviceID = AudioDeviceID(kAudioObjectUnknown)
     private var lastEvent: VolumeEvent?
 
-    private static let volumeAddress = AudioObjectPropertyAddress(
+    // Shared with MediaKeyInterceptor, which adjusts the same properties.
+    static let volumeAddress = AudioObjectPropertyAddress(
         mSelector: kAudioHardwareServiceDeviceProperty_VirtualMainVolume,
         mScope: kAudioDevicePropertyScopeOutput,
         mElement: kAudioObjectPropertyElementMain
     )
-    private static let muteAddress = AudioObjectPropertyAddress(
+    static let muteAddress = AudioObjectPropertyAddress(
         mSelector: kAudioDevicePropertyMute,
         mScope: kAudioDevicePropertyScopeOutput,
         mElement: kAudioObjectPropertyElementMain
     )
-    private static let defaultOutputAddress = AudioObjectPropertyAddress(
+    static let defaultOutputAddress = AudioObjectPropertyAddress(
         mSelector: kAudioHardwarePropertyDefaultOutputDevice,
         mScope: kAudioObjectPropertyScopeGlobal,
         mElement: kAudioObjectPropertyElementMain
@@ -109,6 +108,16 @@ final class VolumeMonitor {
     private func emitCurrentState() {
         // Dedupe so a held key at 0/100% doesn't keep re-firing the HUD.
         guard let event = readState(), event != lastEvent else { return }
+        lastEvent = event
+        onEvent?(event)
+    }
+
+    /// Fires the HUD unconditionally. MediaKeyInterceptor calls this after
+    /// consuming a volume key: unlike system key handling, a consumed press
+    /// at 0 or 100% changes nothing, so no property notification arrives —
+    /// yet the HUD should still appear.
+    func showCurrentState() {
+        guard let event = readState() else { return }
         lastEvent = event
         onEvent?(event)
     }

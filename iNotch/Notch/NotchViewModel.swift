@@ -33,6 +33,9 @@ final class NotchViewModel: ObservableObject {
 
     private var hoverWork: DispatchWorkItem?
     private var transientDismissWork: DispatchWorkItem?
+    /// Non-nil while a paused track's live activity is lingering on screen.
+    private var musicLingerWork: DispatchWorkItem?
+    private var wasPlaying = false
     private var cancellables = Set<AnyCancellable>()
 
     init(
@@ -47,7 +50,15 @@ final class NotchViewModel: ObservableObject {
 
         music.$isPlaying
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in self?.refreshMode() }
+            .sink { [weak self] _ in self?.musicStateChanged() }
+            .store(in: &cancellables)
+        // A paused track can vanish without an isPlaying change (Music stops
+        // or quits while already paused), so title emptying is watched too —
+        // otherwise a lingering live activity would strand with no track.
+        music.$title
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.musicStateChanged() }
             .store(in: &cancellables)
 
         battery.onEvent = { [weak self] event in
@@ -155,6 +166,40 @@ final class NotchViewModel: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: work)
     }
 
+    // MARK: - Paused-music linger
+
+    /// Pausing shouldn't snap the notch shut: the live activity stays up
+    /// (artwork kept, bars frozen) for a grace period so a quick resume feels
+    /// continuous. Playing, stopping, or quitting Music ends the linger.
+    private func musicStateChanged() {
+        let playing = music.isPlaying
+        defer { wasPlaying = playing }
+        if playing || music.title.isEmpty {
+            cancelMusicLinger()
+        } else if wasPlaying {
+            startMusicLinger()
+        }
+        refreshMode()
+    }
+
+    private func startMusicLinger() {
+        musicLingerWork?.cancel()
+        let work = DispatchWorkItem { [weak self] in
+            guard let self else { return }
+            self.musicLingerWork = nil
+            self.refreshMode()
+        }
+        musicLingerWork = work
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + Preferences.musicLingerDuration, execute: work
+        )
+    }
+
+    private func cancelMusicLinger() {
+        musicLingerWork?.cancel()
+        musicLingerWork = nil
+    }
+
     // MARK: - Mode resolution
 
     func refreshMode() {
@@ -169,6 +214,9 @@ final class NotchViewModel: ObservableObject {
             // Expands even while paused/stopped so play is always reachable.
             setMode(.expandedMusic)
         } else if music.isPlaying {
+            setMode(.compactMusic)
+        } else if musicLingerWork != nil, !music.title.isEmpty {
+            // Paused, within the linger window: keep the ears up.
             setMode(.compactMusic)
         } else {
             setMode(.idle)

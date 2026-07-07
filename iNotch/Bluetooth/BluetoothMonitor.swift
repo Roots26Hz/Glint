@@ -1,6 +1,8 @@
 import Foundation
 import IOBluetooth
+import IOKit
 import IOKit.hid
+import IOKit.ps
 
 /// A Bluetooth device that just connected.
 struct BluetoothEvent: Equatable {
@@ -13,6 +15,8 @@ struct BluetoothEvent: Equatable {
 
     var name: String
     var kind: Kind
+    /// 0…100, nil when the device doesn't report a battery level.
+    var battery: Int?
 }
 
 /// Watches for Bluetooth device connections and reports them through
@@ -37,7 +41,9 @@ final class BluetoothMonitor: NSObject {
     private var hidManager: IOHIDManager?
     /// Devices already connected at launch enumerate in a burst right after
     /// the HID manager opens; anything inside this window is not "news".
-    private let startupGrace = Date().addingTimeInterval(3)
+    /// (5 s: the 3 s window was occasionally outrun by app launch, making a
+    /// connected headset banner on every start.)
+    private let startupGrace = Date().addingTimeInterval(5)
 
     override init() {
         super.init()
@@ -52,7 +58,108 @@ final class BluetoothMonitor: NSObject {
         let now = Date()
         if let last = recentlyAnnounced[name], now.timeIntervalSince(last) < 5 { return }
         recentlyAnnounced[name] = now
-        onEvent?(BluetoothEvent(name: name, kind: kind))
+        // The battery level (shown like the iOS pairing banner) usually lands
+        // in the IORegistry a moment after the connection, so retry briefly
+        // before showing the banner without it.
+        Task { [weak self] in
+            var battery = Self.batteryPercent(matching: name)
+            var attempts = 0
+            while battery == nil, attempts < 5 {
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                battery = Self.batteryPercent(matching: name)
+                attempts += 1
+            }
+            self?.onEvent?(BluetoothEvent(name: name, kind: kind, battery: battery))
+        }
+    }
+
+    // MARK: - Battery level
+
+    /// Battery percentage for a connected Bluetooth device, matched by name.
+    ///
+    /// Most devices (third-party mice, keyboards, headsets) surface their
+    /// level as an accessory power source, so IOPowerSources is checked
+    /// first; the AppleDeviceManagementHIDEventService registry walk remains
+    /// as the fallback because it is the only place AirPods publish their
+    /// per-ear Left/Right values.
+    private static func batteryPercent(matching name: String) -> Int? {
+        accessoryPowerSourcePercent(matching: name)
+            ?? deviceManagementPercent(matching: name)
+    }
+
+    private static func normalized(_ name: String) -> String {
+        name.trimmingCharacters(in: .whitespaces).lowercased()
+    }
+
+    /// Accessory power sources (what `pmset -g accps` lists) are not part of
+    /// the public IOPSCopyPowerSourcesList, so this goes through the private
+    /// accessories filter of IOPSCopyPowerSourcesByType — same read-only,
+    /// fail-to-nil pattern as BrightnessMonitor's DisplayServices call.
+    private typealias CopyPowerSourcesByType = @convention(c) (Int32) -> Unmanaged<CFArray>?
+    private static let copyPowerSourcesByType: CopyPowerSourcesByType? = {
+        guard
+            let handle = dlopen("/System/Library/Frameworks/IOKit.framework/IOKit", RTLD_LAZY),
+            let symbol = dlsym(handle, "IOPSCopyPowerSourcesByType")
+        else { return nil }
+        return unsafeBitCast(symbol, to: CopyPowerSourcesByType.self)
+    }()
+    private static let accessorySourcesFilter: Int32 = 4 // kIOPSSourceForAccessories
+
+    private static func accessoryPowerSourcePercent(matching name: String) -> Int? {
+        guard
+            let copyPowerSourcesByType,
+            let sources = copyPowerSourcesByType(accessorySourcesFilter)?
+                .takeRetainedValue() as? [[String: Any]]
+        else { return nil }
+        let wanted = normalized(name)
+
+        for description in sources {
+            guard
+                let sourceName = description[kIOPSNameKey] as? String,
+                normalized(sourceName) == wanted,
+                let current = description[kIOPSCurrentCapacityKey] as? Int
+            else { continue }
+            // Accessories report capacity as 0-100, but scale defensively.
+            let maxCapacity = description[kIOPSMaxCapacityKey] as? Int ?? 100
+            guard maxCapacity > 0 else { continue }
+            return min(max(current * 100 / maxCapacity, 0), 100)
+        }
+        return nil
+    }
+
+    private static func deviceManagementPercent(matching name: String) -> Int? {
+        var iterator: io_iterator_t = 0
+        guard IOServiceGetMatchingServices(
+            kIOMainPortDefault,
+            IOServiceMatching("AppleDeviceManagementHIDEventService"),
+            &iterator
+        ) == KERN_SUCCESS else { return nil }
+        defer { IOObjectRelease(iterator) }
+
+        func property(_ entry: io_registry_entry_t, _ key: String) -> Any? {
+            IORegistryEntryCreateCFProperty(entry, key as CFString, kCFAllocatorDefault, 0)?
+                .takeRetainedValue()
+        }
+        let wanted = normalized(name)
+
+        while true {
+            let entry = IOIteratorNext(iterator)
+            guard entry != 0 else { return nil }
+            defer { IOObjectRelease(entry) }
+
+            guard
+                let product = property(entry, "Product") as? String,
+                normalized(product) == wanted
+            else { continue }
+            if let percent = property(entry, "BatteryPercent") as? Int {
+                return min(max(percent, 0), 100)
+            }
+            let left = property(entry, "BatteryPercentLeft") as? Int
+            let right = property(entry, "BatteryPercentRight") as? Int
+            if left != nil || right != nil {
+                return min(max(left ?? 0, right ?? 0), 100)
+            }
+        }
     }
 
     // MARK: - Classic Bluetooth (IOBluetooth)
