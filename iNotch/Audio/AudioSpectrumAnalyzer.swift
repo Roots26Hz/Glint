@@ -3,6 +3,15 @@ import AppKit
 import CoreAudio
 import Foundation
 
+struct SpectrumData: Equatable {
+    var levels: [Float]
+    var bassEnergy: Float
+    var midEnergy: Float
+    var trebleEnergy: Float
+    var beatImpulse: Float
+    static let empty = SpectrumData(levels: [Float](repeating: 0, count: 16), bassEnergy: 0, midEnergy: 0, trebleEnergy: 0, beatImpulse: 0)
+}
+
 /// Captures Apple Music's audio output through a Core Audio process tap and
 /// publishes smoothed frequency-band levels (bass → treble) for the notch
 /// equalizer. Capture requires the one-time System Audio Recording permission
@@ -15,10 +24,9 @@ import Foundation
 /// visualizer animation.
 @MainActor
 final class AudioSpectrumAnalyzer: ObservableObject {
-    nonisolated static let bandCount = 8
+    nonisolated static let bandCount = 16
 
-    /// Per-band levels, 0…1, bass first.
-    @Published private(set) var levels = [Float](repeating: 0, count: bandCount)
+    @Published private(set) var data = SpectrumData.empty
     @Published private(set) var isCapturing = false
 
     private var tapID = AudioObjectID(kAudioObjectUnknown)
@@ -77,10 +85,10 @@ final class AudioSpectrumAnalyzer: ObservableObject {
 
         let processor = SpectrumProcessor(
             sampleRate: Self.tapSampleRate(of: tapID) ?? 48_000
-        ) { [weak self] levels in
+        ) { [weak self] data in
             DispatchQueue.main.async {
                 guard let self, self.isCapturing else { return }
-                self.levels = levels
+                self.data = data
             }
         }
         self.processor = processor
@@ -101,7 +109,7 @@ final class AudioSpectrumAnalyzer: ObservableObject {
     func stop() {
         teardown()
         isCapturing = false
-        levels = [Float](repeating: 0, count: Self.bandCount)
+        data = .empty
     }
 
     deinit {
@@ -218,13 +226,19 @@ private final class SpectrumProcessor {
     private static let fftSize = 1024
     private static let hopSize = 512
     private static let halfSize = fftSize / 2
-    /// Band edges in Hz, bass → treble; one band between each pair.
-    private static let bandEdges: [Float] = [35, 80, 180, 400, 900, 2_000, 4_500, 9_500, 16_000]
+    private static let bandEdges: [Float] = {
+        let count = 16
+        let minFreq: Float = 30
+        let maxFreq: Float = 16_000
+        return (0...count).map { i in
+            minFreq * pow(maxFreq / minFreq, Float(i) / Float(count))
+        }
+    }()
 
     private(set) var everHeardAudio = false
 
     private let sampleRate: Float
-    private let onLevels: ([Float]) -> Void
+    private let onLevels: (SpectrumData) -> Void
     private let dftSetup: vDSP_DFT_Setup?
     private let hannWindow: [Float]
 
@@ -239,12 +253,13 @@ private final class SpectrumProcessor {
     private let magnitudes = UnsafeMutablePointer<Float>.allocate(capacity: halfSize)
 
     private var smoothed = [Float](repeating: 0, count: AudioSpectrumAnalyzer.bandCount)
+    private var lastBass: Float = 0
     /// Slow-decaying loudest-band reference so levels auto-calibrate to the
     /// tap's absolute scale instead of hardcoding gain.
     private var peakDB: Float = -12
     private var lastEmit = Date.distantPast
 
-    init(sampleRate: Float, onLevels: @escaping ([Float]) -> Void) {
+    init(sampleRate: Float, onLevels: @escaping (SpectrumData) -> Void) {
         self.sampleRate = sampleRate
         self.onLevels = onLevels
         dftSetup = vDSP_DFT_zrop_CreateSetup(nil, vDSP_Length(Self.fftSize), .FORWARD)
@@ -324,7 +339,8 @@ private final class SpectrumProcessor {
         var bandDB = [Float](repeating: -80, count: AudioSpectrumAnalyzer.bandCount)
         for band in 0..<AudioSpectrumAnalyzer.bandCount {
             let low = max(Int(Self.bandEdges[band] / binWidth), 1)
-            let high = min(Int(Self.bandEdges[band + 1] / binWidth), Self.halfSize - 1)
+            let highRaw = Int(Self.bandEdges[band + 1] / binWidth)
+            let high = min(max(low, highRaw), Self.halfSize - 1)
             guard high >= low else { continue }
             var mean: Float = 0
             vDSP_meanv(magnitudes + low, 1, &mean, vDSP_Length(high - low + 1))
@@ -343,14 +359,21 @@ private final class SpectrumProcessor {
         for band in 0..<AudioSpectrumAnalyzer.bandCount {
             let level = min(max((bandDB[band] - (peakDB - range)) / range, 0), 1)
             // Fast attack so beats punch, slower release so bars fall gently.
-            let factor: Float = level > smoothed[band] ? 0.55 : 0.10
+            let factor: Float = level > smoothed[band] ? 0.65 : 0.08
             smoothed[band] += (level - smoothed[band]) * factor
         }
 
+        let bass = (smoothed[0] + smoothed[1] + smoothed[2] + smoothed[3]) / 4.0
+        let mid = (smoothed[4] + smoothed[5] + smoothed[6] + smoothed[7] + smoothed[8] + smoothed[9]) / 6.0
+        let treble = (smoothed[10] + smoothed[11] + smoothed[12] + smoothed[13] + smoothed[14] + smoothed[15]) / 6.0
+        
+        let impulse = max(0, bass - lastBass)
+        lastBass = bass
+
         let now = Date()
-        if now.timeIntervalSince(lastEmit) >= 1.0 / 30.0 {
+        if now.timeIntervalSince(lastEmit) >= 1.0 / 86.0 {
             lastEmit = now
-            onLevels(smoothed)
+            onLevels(SpectrumData(levels: smoothed, bassEnergy: bass, midEnergy: mid, trebleEnergy: treble, beatImpulse: impulse))
         }
     }
 }

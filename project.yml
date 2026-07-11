@@ -30,11 +30,9 @@ targets:
         MACOSX_DEPLOYMENT_TARGET: "26.0"
         PRODUCT_BUNDLE_IDENTIFIER: com.rutav.iNotch
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        # A stable identity (not ad-hoc "-"): ad-hoc re-signing gives the app
-        # a new identity every build, and macOS silently drops its TCC grants
-        # (Accessibility, Music automation, audio capture) each time.
-        CODE_SIGN_IDENTITY: "Apple Development"
-        DEVELOPMENT_TEAM: VB36X5XLGX
+        # Changed to ad-hoc signing so you can build locally without a Developer Account.
+        # Note: You may need to re-grant permissions (Accessibility, etc.) after each build.
+        CODE_SIGN_IDENTITY: "-"
         CODE_SIGN_STYLE: Manual
         ENABLE_HARDENED_RUNTIME: false
         COMBINE_HIDPI_IMAGES: true

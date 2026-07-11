@@ -19,9 +19,13 @@ final class MusicPlayerService: ObservableObject {
     @Published private(set) var duration: Double = 0
     @Published private(set) var position: Double = 0
     @Published private(set) var artwork: NSImage?
-    @Published private(set) var artworkColor: Color = ArtworkColorExtractor.fallback
+    @Published private(set) var palette: ColorPalette = .fallback
     @Published private(set) var shuffleEnabled = false
     @Published private(set) var repeatMode = RepeatMode.off
+    @Published private(set) var lastPositionUpdate = Date()
+
+    /// Emits when the track changes, useful for triggering Now Playing notifications.
+    let trackChanged = PassthroughSubject<Void, Never>()
 
     /// Music's "song repeat" values, raw-valued to match the AppleScript enum.
     enum RepeatMode: String {
@@ -69,7 +73,9 @@ final class MusicPlayerService: ObservableObject {
 
         if state == "Playing" || state == "Paused" {
             isPlaying = state == "Playing"
-            title = (info["Name"] as? String) ?? ""
+            let newTitle = (info["Name"] as? String) ?? ""
+            let trackChanged = (self.title != newTitle && !self.title.isEmpty && !newTitle.isEmpty)
+            title = newTitle
             artist = (info["Artist"] as? String) ?? ""
             album = (info["Album"] as? String) ?? ""
             if let totalTimeMS = info["Total Time"] as? Double {
@@ -80,6 +86,10 @@ final class MusicPlayerService: ObservableObject {
             refreshPosition()
             refreshArtworkIfNeeded()
             refreshPlaybackOptions()
+            
+            if trackChanged {
+                self.trackChanged.send()
+            }
         } else {
             // Stopped, or Music quit.
             isPlaying = false
@@ -90,7 +100,7 @@ final class MusicPlayerService: ObservableObject {
             position = 0
             artwork = nil
             artworkKey = ""
-            artworkColor = ArtworkColorExtractor.fallback
+            palette = .fallback
         }
     }
 
@@ -116,6 +126,7 @@ final class MusicPlayerService: ObservableObject {
             self.artist = parts[2]
             self.album = parts[3]
             self.position = Self.parseNumber(parts[4])
+            self.lastPositionUpdate = Date()
             self.duration = Self.parseNumber(parts[5])
             self.shuffleEnabled = parts[6].lowercased() == "true"
             self.repeatMode = RepeatMode(rawValue: parts[7].lowercased()) ?? .off
@@ -144,15 +155,11 @@ final class MusicPlayerService: ObservableObject {
 
     private func refreshPosition() {
         guard isMusicRunning else { return }
-        let script = """
-        tell application "Music"
-            if player state is stopped then return "0"
-            return (player position as text)
-        end tell
-        """
+        let script = "tell application \"Music\" to get player position as text"
         runScript(script) { [weak self] descriptor in
             guard let self, let raw = descriptor?.stringValue else { return }
             self.position = Self.parseNumber(raw)
+            self.lastPositionUpdate = Date()
         }
     }
 
@@ -195,13 +202,13 @@ final class MusicPlayerService: ObservableObject {
 
     private func updateArtworkColor(from image: NSImage?) {
         guard let image else {
-            artworkColor = ArtworkColorExtractor.fallback
+            palette = .fallback
             return
         }
         DispatchQueue.global(qos: .utility).async { [weak self] in
-            let color = ArtworkColorExtractor.dominantColor(from: image)
+            let extractedPalette = ArtworkColorExtractor.extractPalette(from: image)
             DispatchQueue.main.async {
-                self?.artworkColor = color
+                self?.palette = extractedPalette
             }
         }
     }

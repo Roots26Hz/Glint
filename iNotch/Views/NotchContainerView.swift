@@ -11,9 +11,9 @@ struct NotchContainerView: View {
     private var topRadius: CGFloat {
         switch viewModel.mode {
         case .idle: return 6
-        case .compactMusic, .batteryAlert, .volumeHUD, .brightnessHUD, .bluetoothConnected:
-            return 9
-        case .expandedMusic: return 14
+        case .compactMusic, .batteryAlert, .volumeHUD, .brightnessHUD, .bluetoothConnected, .nowPlayingNotification:
+            return 12
+        case .expandedMusic: return 20
         }
     }
 
@@ -21,8 +21,9 @@ struct NotchContainerView: View {
         switch viewModel.mode {
         case .idle: return 11
         case .compactMusic, .batteryAlert, .volumeHUD, .brightnessHUD, .bluetoothConnected:
-            return 14
-        case .expandedMusic: return 26
+            return 20
+        case .nowPlayingNotification: return 26
+        case .expandedMusic: return 34
         }
     }
 
@@ -32,12 +33,6 @@ struct NotchContainerView: View {
 
         ZStack(alignment: .top) {
             background(in: shape)
-                .overlay {
-                    if viewModel.mode == .expandedMusic {
-                        ArtworkWash(music: viewModel.music, height: size.height)
-                            .transition(.opacity)
-                    }
-                }
                 .overlay(alignment: .top) {
                     content
                         .padding(.horizontal, topRadius)
@@ -63,7 +58,7 @@ struct NotchContainerView: View {
                 )
                 .frame(width: size.width + topRadius * 2, height: size.height)
                 .contentShape(shape)
-                .onHover { viewModel.hoverChanged($0) }
+                .globalHover { viewModel.hoverChanged($0) }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         // Mode changes are animated solely by setMode's withAnimation, which
@@ -78,7 +73,23 @@ struct NotchContainerView: View {
     /// of the black cover rather than a view replacement.
     private func background(in shape: NotchShape) -> some View {
         Color.clear
-            .glassEffect(.regular.tint(.black.opacity(0.5)), in: shape)
+            .glassEffect(.regular.tint(.black.opacity(0.35)), in: shape)
+            .overlay {
+                if viewModel.mode == .expandedMusic || viewModel.mode == .nowPlayingNotification {
+                    ZStack {
+                        viewModel.music.palette.background
+                        if let image = viewModel.music.artwork {
+                            Image(nsImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .blur(radius: 50)
+                                .opacity(0.6)
+                                .modifier(SlowRotationModifier())
+                        }
+                    }
+                    .transition(.opacity)
+                }
+            }
             .overlay {
                 shape.fill(.black)
                     .opacity(viewModel.mode == .idle ? 1 : 0)
@@ -103,6 +114,13 @@ struct NotchContainerView: View {
             ExpandedMusicView(
                 music: viewModel.music,
                 notchHeight: viewModel.notchSize.height
+            )
+            .transition(.blurReplace)
+
+        case .nowPlayingNotification:
+            NowPlayingNotificationView(
+                music: viewModel.music,
+                notchSize: viewModel.notchSize
             )
             .transition(.blurReplace)
 
@@ -139,19 +157,63 @@ struct NotchContainerView: View {
     }
 }
 
-/// Subtle artwork-colored glow behind the expanded player. A separate view so
-/// it observes MusicPlayerService and re-renders when the accent changes.
-private struct ArtworkWash: View {
-    @ObservedObject var music: MusicPlayerService
-    var height: CGFloat
+struct SlowRotationModifier: ViewModifier {
+    @State private var rotation: Double = 0
+    func body(content: Content) -> some View {
+        content
+            .rotationEffect(.degrees(rotation))
+            .onAppear {
+                withAnimation(.linear(duration: 40).repeatForever(autoreverses: false)) {
+                    rotation = 360
+                }
+            }
+    }
+}
 
-    var body: some View {
-        RadialGradient(
-            colors: [music.artworkColor.opacity(0.22), .clear],
-            center: .top,
-            startRadius: 0,
-            endRadius: height
-        )
-        .allowsHitTesting(false)
+struct GlobalHoverView: NSViewRepresentable {
+    var onHover: (Bool) -> Void
+
+    func makeNSView(context: Context) -> TrackingView {
+        let view = TrackingView()
+        view.onHover = onHover
+        return view
+    }
+
+    func updateNSView(_ nsView: TrackingView, context: Context) {
+        nsView.onHover = onHover
+    }
+
+    class TrackingView: NSView {
+        var onHover: ((Bool) -> Void)?
+        private var trackingArea: NSTrackingArea?
+
+        override func updateTrackingAreas() {
+            super.updateTrackingAreas()
+            if let trackingArea = trackingArea {
+                removeTrackingArea(trackingArea)
+            }
+            let options: NSTrackingArea.Options = [
+                .mouseEnteredAndExited,
+                .activeAlways,
+                .inVisibleRect
+            ]
+            let area = NSTrackingArea(rect: bounds, options: options, owner: self, userInfo: nil)
+            addTrackingArea(area)
+            self.trackingArea = area
+        }
+
+        override func mouseEntered(with event: NSEvent) {
+            onHover?(true)
+        }
+
+        override func mouseExited(with event: NSEvent) {
+            onHover?(false)
+        }
+    }
+}
+
+extension View {
+    func globalHover(perform action: @escaping (Bool) -> Void) -> some View {
+        self.background(GlobalHoverView(onHover: action))
     }
 }

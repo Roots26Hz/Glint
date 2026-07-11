@@ -6,27 +6,23 @@ struct CompactMusicView: View {
     @ObservedObject var music: MusicPlayerService
     var notchSize: CGSize
 
-    @AppStorage(Preferences.musicWaveStyleKey)
-    private var waveStyle = Preferences.musicWaveStyleEqualizer
+
 
     var body: some View {
         HStack(spacing: 0) {
             artwork
-                .padding(.leading, 13)
+                .frame(width: 65)
             Spacer(minLength: notchSize.width)
             soundwave
-                .padding(.trailing, 15)
+                .frame(width: 65)
         }
         .frame(height: notchSize.height)
     }
 
     @ViewBuilder
     private var soundwave: some View {
-        if waveStyle == Preferences.musicWaveStyleEqualizer {
-            AudioEqualizerView(isPlaying: music.isPlaying, color: music.artworkColor)
-        } else {
-            AudioVisualizerView(isPlaying: music.isPlaying, color: music.artworkColor)
-        }
+        PremiumVisualizerView(isPlaying: music.isPlaying, palette: music.palette)
+            .frame(width: 44)
     }
 
     @ViewBuilder
@@ -34,16 +30,18 @@ struct CompactMusicView: View {
         if let image = music.artwork {
             Image(nsImage: image)
                 .resizable()
+                .interpolation(.high)
+                .antialiased(true)
                 .aspectRatio(contentMode: .fill)
-                .frame(width: 19, height: 19)
-                .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
+                .frame(width: 26, height: 26)
+                .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
         } else {
-            RoundedRectangle(cornerRadius: 5, style: .continuous)
+            RoundedRectangle(cornerRadius: 7, style: .continuous)
                 .fill(Color.white.opacity(0.15))
-                .frame(width: 19, height: 19)
+                .frame(width: 26, height: 26)
                 .overlay {
                     Image(systemName: "music.note")
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(.white.opacity(0.7))
                 }
         }

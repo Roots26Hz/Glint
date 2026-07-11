@@ -40,6 +40,6 @@ struct BrightnessHUDView: View {
     }
 
     private var tint: Color {
-        music.isPlaying ? music.artworkColor : .white
+        music.isPlaying ? music.palette.dominant : .white
     }
 }
