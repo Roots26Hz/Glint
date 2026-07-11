@@ -11,6 +11,11 @@ struct ExpandedMusicView: View {
     @State private var skipBackTaps = 0
     @State private var skipForwardTaps = 0
 
+    // Staggered animation states
+    @State private var artworkVisible = false
+    @State private var textVisible = false
+    @State private var controlsVisible = false
+
     private var hasTrack: Bool { !music.title.isEmpty }
 
     var body: some View {
@@ -22,32 +27,56 @@ struct ExpandedMusicView: View {
             GlassEffectContainer(spacing: 18) {
                 HStack(alignment: .center, spacing: 14) {
                     artwork
+                        .scaleEffect(artworkVisible ? 1 : 0.9)
+                        .opacity(artworkVisible ? 1 : 0)
 
                     VStack(alignment: .leading, spacing: 7) {
                         VStack(alignment: .leading, spacing: 1) {
                             Text(music.title.isEmpty ? "Not Playing" : music.title)
                                 .font(.system(size: 13, weight: .semibold))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(music.palette.highlight)
                                 .lineLimit(1)
                             Text(music.artist)
                                 .font(.system(size: 11))
-                                // ≥0.75 keeps 4.5:1 over the lightest glass state.
-                                .foregroundStyle(.white.opacity(0.75))
+                                .foregroundStyle(music.palette.secondary)
                                 .lineLimit(1)
                         }
+                        .id(music.title)
+                        .transition(.blurReplace)
+                        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: music.title)
+                        .opacity(textVisible ? 1 : 0)
+                        .offset(y: textVisible ? 0 : 5)
 
                         if hasTrack {
                             ProgressBar(music: music)
+                                .opacity(textVisible ? 1 : 0)
                         }
 
                         controls
                             .frame(maxWidth: .infinity, alignment: .center)
+                            .opacity(controlsVisible ? 1 : 0)
+                            .offset(y: controlsVisible ? 0 : 5)
                     }
                 }
                 .padding(.horizontal, 18)
                 .padding(.top, 6)
-                .padding(.bottom, 14)
+                .padding(.bottom, 0)
             }
+        }
+        .onAppear {
+            triggerStaggeredEntry()
+        }
+    }
+
+    private func triggerStaggeredEntry() {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8).delay(0.05)) {
+            artworkVisible = true
+        }
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8).delay(0.15)) {
+            textVisible = true
+        }
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8).delay(0.25)) {
+            controlsVisible = true
         }
     }
 
@@ -56,6 +85,8 @@ struct ExpandedMusicView: View {
             if let image = music.artwork {
                 Image(nsImage: image)
                     .resizable()
+                    .interpolation(.high)
+                    .antialiased(true)
                     .aspectRatio(contentMode: .fill)
             } else {
                 ZStack {
@@ -73,7 +104,11 @@ struct ExpandedMusicView: View {
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .glassEffectID("artwork", in: glassSpace)
-        .shadow(color: .black.opacity(0.4), radius: 8, y: 3)
+        .shadow(color: music.isPlaying ? music.palette.glow.opacity(0.6) : .black.opacity(0.4), radius: 8, y: 3)
+        .id(music.title)
+        .transition(.blurReplace)
+        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: music.title)
+        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: music.isPlaying)
     }
 
     private var controls: some View {
@@ -116,13 +151,13 @@ struct ExpandedMusicView: View {
         } label: {
             Image(systemName: music.isPlaying ? "pause.fill" : "play.fill")
                 .font(.system(size: 17, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(music.palette.highlight)
                 // Morph play ⇄ pause layer-by-layer instead of swapping.
                 .contentTransition(.symbolEffect(.replace.downUp.byLayer))
                 .animation(.spring(response: 0.3, dampingFraction: 0.75), value: music.isPlaying)
                 .frame(width: 40, height: 40)
                 .glassEffect(
-                    .regular.tint(music.artworkColor.opacity(0.35)).interactive(),
+                    .regular.tint(music.palette.dominant.opacity(0.35)).interactive(),
                     in: Circle()
                 )
                 // A stable ID — keying on the symbol would change the ID on
@@ -131,7 +166,7 @@ struct ExpandedMusicView: View {
                 .padding(2)
                 .contentShape(Circle())
         }
-        .buttonStyle(PressableButtonStyle())
+        .buttonStyle(HoverGlowingButtonStyle(palette: music.palette))
         .accessibilityLabel(music.isPlaying ? "Pause" : "Play")
     }
 
@@ -142,7 +177,7 @@ struct ExpandedMusicView: View {
         Button(action: action) {
             Image(systemName: symbol)
                 .font(.system(size: size, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(music.palette.highlight)
                 .symbolEffect(.bounce, options: .speed(1.4), value: bounce)
                 .frame(width: 32, height: 32)
                 .glassEffect(.regular.interactive(), in: Circle())
@@ -151,7 +186,7 @@ struct ExpandedMusicView: View {
                 .padding(6)
                 .contentShape(Circle())
         }
-        .buttonStyle(PressableButtonStyle())
+        .buttonStyle(HoverGlowingButtonStyle(palette: music.palette))
         .accessibilityLabel(label)
         .transition(.opacity.combined(with: .scale(scale: 0.6)))
     }
@@ -165,7 +200,7 @@ struct ExpandedMusicView: View {
         Button(action: action) {
             Image(systemName: symbol)
                 .font(.system(size: 11, weight: .bold))
-                .foregroundStyle(isOn ? music.artworkColor : .white.opacity(0.75))
+                .foregroundStyle(isOn ? music.palette.dominant : music.palette.secondary)
                 .symbolEffect(.bounce, options: .speed(1.4), value: bounce)
                 .contentTransition(.symbolEffect(.replace))
                 .animation(.smooth(duration: 0.25), value: isOn)
@@ -175,20 +210,26 @@ struct ExpandedMusicView: View {
                 .padding(6)
                 .contentShape(Circle())
         }
-        .buttonStyle(PressableButtonStyle())
+        .buttonStyle(HoverGlowingButtonStyle(palette: music.palette))
         .accessibilityLabel(label)
         .accessibilityAddTraits(isOn ? .isSelected : [])
         .transition(.opacity.combined(with: .scale(scale: 0.6)))
     }
 }
 
-/// Springy press feedback shared by all transport buttons: the whole glass
-/// circle squeezes while pressed and pops back on release.
-private struct PressableButtonStyle: ButtonStyle {
+private struct HoverGlowingButtonStyle: ButtonStyle {
+    var palette: ColorPalette
+    @State private var isHovering = false
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed ? 0.85 : 1)
+            .scaleEffect(configuration.isPressed ? 0.85 : (isHovering ? 1.08 : 1))
+            .shadow(color: isHovering ? palette.glow.opacity(0.8) : .clear, radius: isHovering ? 8 : 0)
             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
+            .animation(.spring(response: 0.4, dampingFraction: 0.6), value: isHovering)
+            .onHover { hovering in
+                isHovering = hovering
+            }
     }
 }
 
@@ -198,55 +239,70 @@ private struct ProgressBar: View {
     @State private var dragFraction: Double?
 
     var body: some View {
-        VStack(spacing: 3) {
-            GeometryReader { geo in
-                let fraction = currentFraction
-                ZStack(alignment: .leading) {
-                    Capsule()
-                        .fill(.white.opacity(0.25))
-                    Capsule()
-                        .fill(music.artworkColor)
-                        .frame(width: max(4, geo.size.width * fraction))
+        TimelineView(.animation) { timeline in
+            VStack(spacing: 3) {
+                GeometryReader { geo in
+                    let fraction = currentFraction(at: timeline.date)
+                    ZStack(alignment: .leading) {
+                        Capsule()
+                            .fill(.white.opacity(0.25))
+                        Capsule()
+                            .fill(
+                                LinearGradient(colors: [music.palette.secondary, music.palette.dominant], startPoint: .leading, endPoint: .trailing)
+                            )
+                            .frame(width: max(4, geo.size.width * fraction))
+                            .shadow(color: music.palette.glow.opacity(0.7), radius: 3)
+                    }
+                    .contentShape(Rectangle().inset(by: -6))
+                            .gesture(
+                                DragGesture(minimumDistance: 0)
+                                    .onChanged { value in
+                                        let x = value.location.x
+                                        // Elastic rubber-banding at the edges
+                                        if x < 0 {
+                                            dragFraction = min(max((x * 0.2) / geo.size.width, 0), 1)
+                                        } else if x > geo.size.width {
+                                            dragFraction = min(max(1 + ((x - geo.size.width) * 0.2) / geo.size.width, 0), 1)
+                                        } else {
+                                            dragFraction = min(max(x / geo.size.width, 0), 1)
+                                        }
+                                    }
+                                    .onEnded { value in
+                                        let fraction = min(max(value.location.x / geo.size.width, 0), 1)
+                                        music.seek(to: fraction * music.duration)
+                                        dragFraction = nil
+                                    }
+                            )
                 }
-                .contentShape(Rectangle().inset(by: -6))
-                .gesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged { value in
-                            dragFraction = min(max(value.location.x / geo.size.width, 0), 1)
-                        }
-                        .onEnded { value in
-                            let fraction = min(max(value.location.x / geo.size.width, 0), 1)
-                            music.seek(to: fraction * music.duration)
-                            dragFraction = nil
-                        }
-                )
+                .frame(height: 5)
+    
+                HStack {
+                    Text(timeString(currentFraction(at: timeline.date) * max(music.duration, 1)))
+                    Spacer()
+                    Text("-" + timeString(max(music.duration - currentFraction(at: timeline.date) * music.duration, 0)))
+                }
+                .font(.system(size: 9, weight: .medium).monospacedDigit())
+                // ≥0.7 keeps 4.5:1 over the lightest glass state.
+                .foregroundStyle(.white.opacity(0.7))
             }
-            .frame(height: 5)
-
-            HStack {
-                Text(timeString(currentFraction * max(music.duration, 1)))
-                Spacer()
-                Text("-" + timeString(max(music.duration - currentFraction * music.duration, 0)))
+            .accessibilityElement()
+            .accessibilityLabel("Playback position")
+            .accessibilityValue(
+                "\(timeString(currentFraction(at: timeline.date) * max(music.duration, 1))) of \(timeString(music.duration))"
+            )
+            .accessibilityAdjustableAction { direction in
+                let delta: Double = direction == .increment ? 5 : -5
+                music.seek(to: min(max(music.position + delta, 0), music.duration))
             }
-            .font(.system(size: 9, weight: .medium).monospacedDigit())
-            // ≥0.7 keeps 4.5:1 over the lightest glass state.
-            .foregroundStyle(.white.opacity(0.7))
-        }
-        .accessibilityElement()
-        .accessibilityLabel("Playback position")
-        .accessibilityValue(
-            "\(timeString(currentFraction * max(music.duration, 1))) of \(timeString(music.duration))"
-        )
-        .accessibilityAdjustableAction { direction in
-            let delta: Double = direction == .increment ? 5 : -5
-            music.seek(to: min(max(music.position + delta, 0), music.duration))
         }
     }
 
-    private var currentFraction: Double {
+    private func currentFraction(at date: Date) -> Double {
         if let dragFraction { return dragFraction }
         guard music.duration > 0 else { return 0 }
-        return min(music.position / music.duration, 1)
+        let timeSinceUpdate = music.isPlaying ? date.timeIntervalSince(music.lastPositionUpdate) : 0
+        let interpolatedPosition = music.position + timeSinceUpdate
+        return min(interpolatedPosition / music.duration, 1)
     }
 
     private func timeString(_ seconds: Double) -> String {

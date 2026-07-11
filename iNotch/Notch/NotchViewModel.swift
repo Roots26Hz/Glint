@@ -11,6 +11,7 @@ enum NotchMode: Equatable {
     case volumeHUD(VolumeEvent)
     case brightnessHUD(BrightnessEvent)
     case bluetoothConnected(BluetoothEvent)
+    case nowPlayingNotification
 }
 
 /// State machine driving the notch UI:
@@ -61,6 +62,11 @@ final class NotchViewModel: ObservableObject {
             .sink { [weak self] _ in self?.musicStateChanged() }
             .store(in: &cancellables)
 
+        music.trackChanged
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in self?.showNowPlayingNotification() }
+            .store(in: &cancellables)
+
         battery.onEvent = { [weak self] event in
             self?.showBatteryAlert(event)
         }
@@ -86,7 +92,9 @@ final class NotchViewModel: ObservableObject {
         case .compactMusic:
             return CGSize(width: notchSize.width + 130, height: notchSize.height)
         case .expandedMusic:
-            return CGSize(width: max(notchSize.width + 300, 480), height: notchSize.height + 138)
+            return CGSize(width: max(notchSize.width + 300, 480), height: notchSize.height + 124)
+        case .nowPlayingNotification:
+            return CGSize(width: max(notchSize.width + 160, 300), height: notchSize.height + 60)
         case .batteryAlert, .volumeHUD, .brightnessHUD, .bluetoothConnected:
             return CGSize(width: notchSize.width + 230, height: notchSize.height)
         }
@@ -120,9 +128,16 @@ final class NotchViewModel: ObservableObject {
     private var isTransientActive: Bool {
         guard transientDismissWork != nil else { return false }
         switch mode {
-        case .batteryAlert, .volumeHUD, .brightnessHUD, .bluetoothConnected: return true
+        case .batteryAlert, .volumeHUD, .brightnessHUD, .bluetoothConnected, .nowPlayingNotification: return true
         default: return false
         }
+    }
+
+    private func showNowPlayingNotification() {
+        guard Preferences.musicEnabled else { return }
+        if mode == .expandedMusic { return } // Don't interrupt hover
+        setMode(.nowPlayingNotification)
+        scheduleTransientDismiss(after: 3.5)
     }
 
     private func showBatteryAlert(_ event: BatteryEvent) {
