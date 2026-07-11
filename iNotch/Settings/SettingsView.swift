@@ -1,6 +1,24 @@
 import SwiftUI
 
 struct SettingsView: View {
+    var body: some View {
+        TabView {
+            GeneralSettingsView()
+                .tabItem {
+                    Label("General", systemImage: "gearshape")
+                }
+            
+            VisualizerStudioView()
+                .tabItem {
+                    Label("Visualizer Studio", systemImage: "wand.and.stars")
+                }
+        }
+        .frame(width: 600, height: 600)
+        .onAppear { DockIcon.show() }
+    }
+}
+
+struct GeneralSettingsView: View {
     @AppStorage(Preferences.hoverDelayKey) private var hoverDelay = 0.2
     @AppStorage(Preferences.notificationDurationKey) private var notificationDuration = 3.5
     @AppStorage(Preferences.lowBatteryThresholdKey) private var lowBatteryThreshold = 20
@@ -106,11 +124,6 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 420)
-        .fixedSize(horizontal: false, vertical: true)
-        // Surface the dock icon while settings are open (hidden again by
-        // AppDelegate when this window closes).
-        .onAppear { DockIcon.show() }
     }
 
     private static func minutesSeconds(_ seconds: Double) -> String {

@@ -12,7 +12,19 @@ import SwiftUI
 /// talk to Music when it is already running.
 @MainActor
 final class MusicPlayerService: ObservableObject {
-    @Published private(set) var isPlaying = false
+    let spectrumAnalyzer = AudioSpectrumAnalyzer()
+    
+    @Published private(set) var isPlaying = false {
+        didSet {
+            if isPlaying != oldValue {
+                if isPlaying {
+                    spectrumAnalyzer.start()
+                } else {
+                    spectrumAnalyzer.stop()
+                }
+            }
+        }
+    }
     @Published private(set) var title = ""
     @Published private(set) var artist = ""
     @Published private(set) var album = ""

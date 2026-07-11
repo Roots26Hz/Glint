@@ -9,16 +9,23 @@ struct BrightnessHUDView: View {
 
     var body: some View {
         HStack(spacing: 0) {
+            Spacer()
+            
             Image(systemName: event.level < 0.34 ? "sun.min.fill" : "sun.max.fill")
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(tint)
-                .frame(width: 24, alignment: .leading)
-                .padding(.leading, 15)
+                .frame(width: 70, alignment: .center)
 
-            Spacer(minLength: notchSize.width - 40)
+            Spacer()
+            
+            Spacer()
+                .frame(width: notchSize.width)
+                
+            Spacer()
 
             levelBar
-                .padding(.trailing, 15)
+                
+            Spacer()
         }
         .frame(height: notchSize.height)
         .accessibilityElement()

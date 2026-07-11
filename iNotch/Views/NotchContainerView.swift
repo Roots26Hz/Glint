@@ -129,7 +129,7 @@ struct NotchContainerView: View {
                 event: event,
                 notchSize: viewModel.notchSize
             )
-            .transition(.blurReplace)
+            .transition(transientTransition)
 
         case .volumeHUD(let event):
             VolumeHUDView(
@@ -137,7 +137,7 @@ struct NotchContainerView: View {
                 notchSize: viewModel.notchSize,
                 music: viewModel.music
             )
-            .transition(.blurReplace)
+            .transition(transientTransition)
 
         case .brightnessHUD(let event):
             BrightnessHUDView(
@@ -145,15 +145,22 @@ struct NotchContainerView: View {
                 notchSize: viewModel.notchSize,
                 music: viewModel.music
             )
-            .transition(.blurReplace)
+            .transition(transientTransition)
 
         case .bluetoothConnected(let event):
             BluetoothNotificationView(
                 event: event,
                 notchSize: viewModel.notchSize
             )
-            .transition(.blurReplace)
+            .transition(transientTransition)
         }
+    }
+    
+    private var transientTransition: AnyTransition {
+        .asymmetric(
+            insertion: .scale(scale: 0.96).combined(with: .opacity).animation(.spring(response: 0.4, dampingFraction: 0.7)),
+            removal: .move(edge: .top).combined(with: .opacity).animation(.easeIn(duration: 0.2))
+        )
     }
 }
 

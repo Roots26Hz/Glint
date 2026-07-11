@@ -25,42 +25,44 @@ struct ExpandedMusicView: View {
                 .frame(height: notchHeight - 4)
 
             GlassEffectContainer(spacing: 18) {
-                HStack(alignment: .center, spacing: 14) {
-                    artwork
-                        .scaleEffect(artworkVisible ? 1 : 0.9)
-                        .opacity(artworkVisible ? 1 : 0)
+                GeometryReader { geo in
+                    HStack(alignment: .center, spacing: 14) {
+                        artwork
+                            .scaleEffect(artworkVisible ? 1 : 0.9)
+                            .opacity(artworkVisible ? 1 : 0)
 
-                    VStack(alignment: .leading, spacing: 7) {
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text(music.title.isEmpty ? "Not Playing" : music.title)
-                                .font(.system(size: 13, weight: .semibold))
-                                .foregroundStyle(music.palette.highlight)
-                                .lineLimit(1)
-                            Text(music.artist)
-                                .font(.system(size: 11))
-                                .foregroundStyle(music.palette.secondary)
-                                .lineLimit(1)
+                        VStack(alignment: .leading, spacing: 7) {
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(music.title.isEmpty ? "Not Playing" : music.title)
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(music.palette.highlight)
+                                    .lineLimit(1)
+                                Text(music.artist)
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(music.palette.secondary)
+                                    .lineLimit(1)
+                            }
+                            .id(music.title)
+                            .transition(.blurReplace)
+                            .animation(.spring(response: 0.5, dampingFraction: 0.8), value: music.title)
+                            .opacity(textVisible ? 1 : 0)
+                            .offset(y: textVisible ? 0 : 5)
+
+                            if hasTrack {
+                                ProgressBar(music: music)
+                                    .opacity(textVisible ? 1 : 0)
+                            }
+
+                            controls
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .opacity(controlsVisible ? 1 : 0)
+                                .offset(y: controlsVisible ? 0 : 5)
                         }
-                        .id(music.title)
-                        .transition(.blurReplace)
-                        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: music.title)
-                        .opacity(textVisible ? 1 : 0)
-                        .offset(y: textVisible ? 0 : 5)
-
-                        if hasTrack {
-                            ProgressBar(music: music)
-                                .opacity(textVisible ? 1 : 0)
-                        }
-
-                        controls
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .opacity(controlsVisible ? 1 : 0)
-                            .offset(y: controlsVisible ? 0 : 5)
                     }
+                    .padding(.horizontal, 18)
+                    .padding(.top, 6)
+                    .padding(.bottom, 0)
                 }
-                .padding(.horizontal, 18)
-                .padding(.top, 6)
-                .padding(.bottom, 0)
             }
         }
         .onAppear {
@@ -224,6 +226,7 @@ private struct HoverGlowingButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .scaleEffect(configuration.isPressed ? 0.85 : (isHovering ? 1.08 : 1))
+            .brightness(configuration.isPressed ? 0.2 : (isHovering ? 0.15 : 0))
             .shadow(color: isHovering ? palette.glow.opacity(0.8) : .clear, radius: isHovering ? 8 : 0)
             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
             .animation(.spring(response: 0.4, dampingFraction: 0.6), value: isHovering)

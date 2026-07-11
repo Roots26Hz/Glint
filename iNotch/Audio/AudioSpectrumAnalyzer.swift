@@ -10,6 +10,13 @@ struct SpectrumData: Equatable {
     var trebleEnergy: Float
     var beatImpulse: Float
     static let empty = SpectrumData(levels: [Float](repeating: 0, count: 16), bassEnergy: 0, midEnergy: 0, trebleEnergy: 0, beatImpulse: 0)
+    
+    func levels(for count: Int) -> [Float] {
+        if count == 8 && levels.count == 16 {
+            return (0..<8).map { (levels[$0 * 2] + levels[$0 * 2 + 1]) / 2.0 }
+        }
+        return levels
+    }
 }
 
 /// Captures Apple Music's audio output through a Core Audio process tap and
@@ -41,6 +48,10 @@ final class AudioSpectrumAnalyzer: ObservableObject {
 
     func start() {
         guard ioProcID == nil else { return }
+        
+        // Ensure the system prompts the user for Screen/Audio Recording permission,
+        // which is required for CoreAudio process taps.
+        _ = CGRequestScreenCaptureAccess()
 
         guard
             let pid = NSRunningApplication.runningApplications(withBundleIdentifier: Self.musicBundleID)

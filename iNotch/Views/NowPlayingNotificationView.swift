@@ -7,6 +7,8 @@ struct NowPlayingNotificationView: View {
 
     var body: some View {
         HStack(spacing: 12) {
+            Spacer()
+            
             if let image = music.artwork {
                 Image(nsImage: image)
                     .resizable()
@@ -42,16 +44,12 @@ struct NowPlayingNotificationView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
             .animation(.spring(response: 0.4, dampingFraction: 0.8), value: music.title)
-
+            
             Spacer()
-
-            PremiumVisualizerView(isPlaying: music.isPlaying, palette: music.palette)
-                .frame(width: 30)
-                .padding(.trailing, 4)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
+        .padding(.horizontal, 24)
+        .padding(.bottom, 12)
         // Skip the hardware notch bounds
-        .padding(.top, notchSize.height - 4)
+        .padding(.top, notchSize.height + 4)
     }
 }

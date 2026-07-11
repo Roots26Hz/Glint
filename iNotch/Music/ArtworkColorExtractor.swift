@@ -64,81 +64,52 @@ enum ArtworkColorExtractor {
         let secondaryColor = toColor(secondaryBucket)
         let highlightColor = toColor(highlightBucket)
 
-        // Adjust for visibility based on perceived luminance
+        // We want a premium, high-contrast look suitable for a dark glass Notch environment.
+        // We ensure colors are never muddy by strictly clamping saturation and brightness.
+
         let domNS = NSColor(dominantColor).usingColorSpace(.deviceRGB) ?? NSColor(white: 0, alpha: 1)
-        
-        let r = domNS.redComponent
-        let g = domNS.greenComponent
-        let b = domNS.blueComponent
-        let luminance = 0.299 * r + 0.587 * g + 0.114 * b
-        
-        let isBright = luminance > 0.6
-        
-        let finalDominant: Color
-        let finalSecondary: Color
-        let finalHighlight: Color
-        let finalBackground: Color
-        let finalGlow: Color
-        
-        if isBright {
-            // Dark UI on bright background
-            finalDominant = Color(NSColor(
-                hue: domNS.hueComponent,
-                saturation: min(domNS.saturationComponent, 0.4),
-                brightness: 0.15,
-                alpha: 1
-            ))
-            let secNS = NSColor(secondaryColor).usingColorSpace(.deviceRGB) ?? domNS
-            finalSecondary = Color(NSColor(
-                hue: secNS.hueComponent,
-                saturation: min(secNS.saturationComponent, 0.3),
-                brightness: 0.25,
-                alpha: 1
-            ))
-            let highNS = NSColor(highlightColor).usingColorSpace(.deviceRGB) ?? domNS
-            finalHighlight = Color(NSColor(
-                hue: highNS.hueComponent,
-                saturation: min(highNS.saturationComponent, 0.5),
-                brightness: 0.1,
-                alpha: 1
-            ))
-            finalBackground = Color(NSColor(
-                hue: domNS.hueComponent,
-                saturation: min(domNS.saturationComponent * 0.3, 0.2),
-                brightness: 0.85,
-                alpha: 1
-            ))
-            finalGlow = finalDominant
-        } else {
-            // Bright UI on dark background
-            finalDominant = Color(NSColor(
-                hue: domNS.hueComponent,
-                saturation: min(domNS.saturationComponent, 0.85),
-                brightness: max(domNS.brightnessComponent, 0.85),
-                alpha: 1
-            ))
-            let secNS = NSColor(secondaryColor).usingColorSpace(.deviceRGB) ?? domNS
-            finalSecondary = Color(NSColor(
-                hue: secNS.hueComponent,
-                saturation: min(secNS.saturationComponent, 0.7),
-                brightness: max(secNS.brightnessComponent, 0.75),
-                alpha: 1
-            ))
-            let highNS = NSColor(highlightColor).usingColorSpace(.deviceRGB) ?? domNS
-            finalHighlight = Color(NSColor(
-                hue: highNS.hueComponent,
-                saturation: min(highNS.saturationComponent, 0.9),
-                brightness: 1.0,
-                alpha: 1
-            ))
-            finalBackground = Color(NSColor(
-                hue: domNS.hueComponent,
-                saturation: min(domNS.saturationComponent * 0.5, 0.4),
-                brightness: 0.15,
-                alpha: 1
-            ))
-            finalGlow = finalDominant
-        }
+        let secNS = NSColor(secondaryColor).usingColorSpace(.deviceRGB) ?? domNS
+        let highNS = NSColor(highlightColor).usingColorSpace(.deviceRGB) ?? domNS
+
+        // Primary (dominant): Rich but balanced
+        let finalDominant = Color(NSColor(
+            hue: domNS.hueComponent,
+            saturation: min(max(domNS.saturationComponent, 0.4), 0.8),
+            brightness: min(max(domNS.brightnessComponent, 0.5), 0.9),
+            alpha: 1
+        ))
+
+        // Secondary: Slightly dimmer for contrast against primary
+        let finalSecondary = Color(NSColor(
+            hue: secNS.hueComponent,
+            saturation: min(max(secNS.saturationComponent, 0.3), 0.7),
+            brightness: min(max(secNS.brightnessComponent, 0.4), 0.75),
+            alpha: 1
+        ))
+
+        // Highlight (used as Accent): High brightness, sharp, crisp
+        let finalHighlight = Color(NSColor(
+            hue: highNS.hueComponent,
+            saturation: min(highNS.saturationComponent, 0.4), // Mixed toward white
+            brightness: 1.0,
+            alpha: 1
+        ))
+
+        // Background: Deep, rich, low luminance so waveforms pop
+        let finalBackground = Color(NSColor(
+            hue: domNS.hueComponent,
+            saturation: min(domNS.saturationComponent, 0.6),
+            brightness: 0.12, // Dark so the visualizer contrasts perfectly
+            alpha: 1
+        ))
+
+        // Glow: Vibrant, high saturation, high brightness
+        let finalGlow = Color(NSColor(
+            hue: domNS.hueComponent,
+            saturation: 0.85,
+            brightness: 1.0,
+            alpha: 1
+        ))
 
         return ColorPalette(
             dominant: finalDominant,
