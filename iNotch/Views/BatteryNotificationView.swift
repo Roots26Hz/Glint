@@ -8,13 +8,20 @@ struct BatteryNotificationView: View {
 
     var body: some View {
         HStack(spacing: 0) {
+            Spacer()
+            
             Text(label)
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(tint)
                 .lineLimit(1)
-                .padding(.leading, 15)
+                .frame(width: 90, alignment: .center)
 
-            Spacer(minLength: notchSize.width - 40)
+            Spacer()
+            
+            Spacer()
+                .frame(width: notchSize.width)
+
+            Spacer()
 
             HStack(spacing: 5) {
                 Text("\(percentage)%")
@@ -24,7 +31,9 @@ struct BatteryNotificationView: View {
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(tint)
             }
-            .padding(.trailing, 15)
+            .frame(width: 90, alignment: .center)
+            
+            Spacer()
         }
         .frame(height: notchSize.height)
         .accessibilityElement()

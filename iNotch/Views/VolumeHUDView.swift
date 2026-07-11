@@ -9,16 +9,23 @@ struct VolumeHUDView: View {
 
     var body: some View {
         HStack(spacing: 0) {
+            Spacer()
+            
             Image(systemName: symbol)
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(event.muted ? Color.white.opacity(0.6) : tint)
-                .frame(width: 24, alignment: .leading)
-                .padding(.leading, 15)
+                .frame(width: 70, alignment: .center)
 
-            Spacer(minLength: notchSize.width - 40)
+            Spacer()
+            
+            Spacer()
+                .frame(width: notchSize.width)
+                
+            Spacer()
 
             levelBar
-                .padding(.trailing, 15)
+                
+            Spacer()
         }
         .frame(height: notchSize.height)
         .accessibilityElement()

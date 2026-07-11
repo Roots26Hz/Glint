@@ -11,15 +11,21 @@ struct BluetoothNotificationView: View {
 
     var body: some View {
         HStack(spacing: 0) {
+            Spacer()
+            
             Text(event.name)
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(.white)
                 .lineLimit(1)
                 .truncationMode(.tail)
-                .frame(maxWidth: 105, alignment: .leading)
-                .padding(.leading, 15)
+                .frame(width: 90, alignment: .center)
 
-            Spacer(minLength: notchSize.width - 40)
+            Spacer()
+            
+            Spacer()
+                .frame(width: notchSize.width)
+
+            Spacer()
 
             HStack(spacing: 5) {
                 Image(systemName: symbol)
@@ -38,7 +44,9 @@ struct BluetoothNotificationView: View {
                         .foregroundStyle(Self.blue)
                 }
             }
-            .padding(.trailing, 15)
+            .frame(width: 90, alignment: .center)
+            
+            Spacer()
         }
         .frame(height: notchSize.height)
         .accessibilityElement()

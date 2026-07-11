@@ -92,7 +92,7 @@ final class NotchViewModel: ObservableObject {
         case .compactMusic:
             return CGSize(width: notchSize.width + 130, height: notchSize.height)
         case .expandedMusic:
-            return CGSize(width: max(notchSize.width + 300, 480), height: notchSize.height + 124)
+            return CGSize(width: max(notchSize.width + 300, 480), height: notchSize.height + 115)
         case .nowPlayingNotification:
             return CGSize(width: max(notchSize.width + 160, 300), height: notchSize.height + 60)
         case .batteryAlert, .volumeHUD, .brightnessHUD, .bluetoothConnected:

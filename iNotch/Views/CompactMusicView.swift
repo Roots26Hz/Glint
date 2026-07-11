@@ -21,7 +21,7 @@ struct CompactMusicView: View {
 
     @ViewBuilder
     private var soundwave: some View {
-        PremiumVisualizerView(isPlaying: music.isPlaying, palette: music.palette)
+        PremiumVisualizerView(isPlaying: music.isPlaying, palette: music.palette, analyzer: music.spectrumAnalyzer)
             .frame(width: 44)
     }
 
