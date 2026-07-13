@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "site",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4601", "--directory", "/Users/rutav_desai/Rutav_Folder/Projects/iNotchv3/docs"],
+      "port": 4601
+    }
+  ]
+}

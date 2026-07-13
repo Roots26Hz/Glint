@@ -1,0 +1,547 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0077EF98BB4A62F705AA5200 /* PremiumVisualizerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE106ACBFBCBED3D12DDD7 /* PremiumVisualizerView.swift */; };
+		0C4518F08D430A6CE46A6BE1 /* GreetingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4B31C819905A290F5B086A /* GreetingView.swift */; };
+		0D0C6509026CD9851FFBED81 /* VisualizerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2481DF0A0B18EC45EB0A973 /* VisualizerModels.swift */; };
+		11F5F56DAD8C6CF78FD79BA9 /* BrightnessMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E12D04DAB5C8F4EAB5C1B1 /* BrightnessMonitor.swift */; };
+		1DDC54CFD52CCF0E6B59B75C /* SpectrumRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1FA08FB361D642250AF120 /* SpectrumRenderer.swift */; };
+		2C6018AB31CC55D0FCCB94E5 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAD7D70E1D57697B0E0817D /* Preferences.swift */; };
+		30AE0D3A8189AD70FC8A998B /* AudioSpectrumAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32CA9FD52B5584B8AD7E79B /* AudioSpectrumAnalyzer.swift */; };
+		35D5971C30DA9FE0890DD876 /* NotchWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49ADDA4ED9AC39525E649973 /* NotchWindow.swift */; };
+		38B976CCC36A986FDF498F41 /* MediaKeyInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9EBD0E88A74256E27D78A5 /* MediaKeyInterceptor.swift */; };
+		43A64F40E60DB49D63F3259D /* VisualizerStudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C230004F396BF864AA32CE /* VisualizerStudioView.swift */; };
+		4D9008AA82F48AEF7814DD17 /* NotchContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8631486A5B0970AAFB47E0A /* NotchContainerView.swift */; };
+		51D0E9648B65EA81C740BC43 /* BrightnessHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3946B7E36480627917A4E035 /* BrightnessHUDView.swift */; };
+		594FC815A79B9B781FC50225 /* VolumeMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CD617C17ABC031F1C362D0A /* VolumeMonitor.swift */; };
+		5A3AE5D925670DE1A6F61EE1 /* BluetoothMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15AAE3A887B02B3A7402983 /* BluetoothMonitor.swift */; };
+		5C3426B879683E0337B2364E /* AdaptiveRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B080926DF8245D43C814A0 /* AdaptiveRenderer.swift */; };
+		61B212C9FAE4FF01C83CEA74 /* ExpandedMusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FD2185325C3E24CA752A880 /* ExpandedMusicView.swift */; };
+		63C68625AF3EE0720B446A0D /* CompactMusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB02CC6C0E49EF8581A0D8F /* CompactMusicView.swift */; };
+		68BCD72E53F553049B59966F /* NotchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F3142CC36AF7DC78A84382 /* NotchViewModel.swift */; };
+		742AC7E278088512395A859A /* NotchShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9DB4156292708BF23D0DA5 /* NotchShape.swift */; };
+		77B8808A57DB9ADF084605FB /* BatteryMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06226DB4B27295059A8487 /* BatteryMonitor.swift */; };
+		80A24DC6A7E900BB39541760 /* VisualizerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA860F6633D9A21ED34902E /* VisualizerRenderer.swift */; };
+		942ED7C1C1A2E823BA52F67A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3023490E670A10EC38870B12 /* Assets.xcassets */; };
+		968147F1B85393D3A65F07D5 /* LiquidFlowRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0CE2734131E4303318A128 /* LiquidFlowRenderer.swift */; };
+		9F546B105A2C720B74FC7D34 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A99B15D01B0F80F6DE0D8C /* SettingsView.swift */; };
+		A8D563896C1996A8A5E0D91C /* GlassPulseRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 891388B9584DF225E041B69D /* GlassPulseRenderer.swift */; };
+		AF33BEA83F8DE85F0F46CF04 /* NowPlayingNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6DE990B652FD5B003CACDE /* NowPlayingNotificationView.swift */; };
+		BF08FF5BC0500475659B3BDB /* BatteryNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200F20B5FB8D82FE6DBB6CD8 /* BatteryNotificationView.swift */; };
+		C55B17803DB9DAE373B9A4C7 /* BluetoothNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11720B1A79E6F8C38BAE7B7B /* BluetoothNotificationView.swift */; };
+		CEA0A8FF66046FEFA80FAC0C /* GlintApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CB74659D174004C620D538A /* GlintApp.swift */; };
+		D1037813FA8982C4F5DE59AF /* AppleClassicRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BBCD9373206882C5394743 /* AppleClassicRenderer.swift */; };
+		D80155FA37D321EBE93545D9 /* AccessibilityTrust.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2A643317C8E18322EB9101 /* AccessibilityTrust.swift */; };
+		DFB32FFCCF7B6C59A3132364 /* MusicPlayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A70DE6C17ED12653BB02EEC /* MusicPlayerService.swift */; };
+		E30C4E870A91DE6A8CBDF10F /* CenterEqualizerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45420DA974AFFB691A2ED360 /* CenterEqualizerRenderer.swift */; };
+		ECBB34178DC54F8555B039B8 /* ArtworkColorExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 873BA54F54165E212EDBACFC /* ArtworkColorExtractor.swift */; };
+		EF6A9492BE373177CFF0576E /* VolumeHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A2707A780413CF4448CA170 /* VolumeHUDView.swift */; };
+		F8C6D9E93A9284726F3CC29C /* EnergyRingRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFA56EA877D6E5C1C2FD4A4 /* EnergyRingRenderer.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0B0CE2734131E4303318A128 /* LiquidFlowRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidFlowRenderer.swift; sourceTree = "<group>"; };
+		0C06226DB4B27295059A8487 /* BatteryMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryMonitor.swift; sourceTree = "<group>"; };
+		0D9EBD0E88A74256E27D78A5 /* MediaKeyInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaKeyInterceptor.swift; sourceTree = "<group>"; };
+		0FD2185325C3E24CA752A880 /* ExpandedMusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandedMusicView.swift; sourceTree = "<group>"; };
+		11720B1A79E6F8C38BAE7B7B /* BluetoothNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothNotificationView.swift; sourceTree = "<group>"; };
+		200F20B5FB8D82FE6DBB6CD8 /* BatteryNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryNotificationView.swift; sourceTree = "<group>"; };
+		25DADCEBA9C483C729B69388 /* Glint.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Glint.entitlements; sourceTree = "<group>"; };
+		3023490E670A10EC38870B12 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		35B080926DF8245D43C814A0 /* AdaptiveRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveRenderer.swift; sourceTree = "<group>"; };
+		3946B7E36480627917A4E035 /* BrightnessHUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrightnessHUDView.swift; sourceTree = "<group>"; };
+		3CD617C17ABC031F1C362D0A /* VolumeMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeMonitor.swift; sourceTree = "<group>"; };
+		3E2E78BBA22734DD486C760B /* Glint.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Glint.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		42F3142CC36AF7DC78A84382 /* NotchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchViewModel.swift; sourceTree = "<group>"; };
+		45420DA974AFFB691A2ED360 /* CenterEqualizerRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenterEqualizerRenderer.swift; sourceTree = "<group>"; };
+		48BBCD9373206882C5394743 /* AppleClassicRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleClassicRenderer.swift; sourceTree = "<group>"; };
+		49ADDA4ED9AC39525E649973 /* NotchWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchWindow.swift; sourceTree = "<group>"; };
+		4A4B31C819905A290F5B086A /* GreetingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreetingView.swift; sourceTree = "<group>"; };
+		4CA860F6633D9A21ED34902E /* VisualizerRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualizerRenderer.swift; sourceTree = "<group>"; };
+		5DB02CC6C0E49EF8581A0D8F /* CompactMusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactMusicView.swift; sourceTree = "<group>"; };
+		5DFA56EA877D6E5C1C2FD4A4 /* EnergyRingRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyRingRenderer.swift; sourceTree = "<group>"; };
+		5E6DE990B652FD5B003CACDE /* NowPlayingNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingNotificationView.swift; sourceTree = "<group>"; };
+		5FAD7D70E1D57697B0E0817D /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
+		7CB74659D174004C620D538A /* GlintApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlintApp.swift; sourceTree = "<group>"; };
+		873BA54F54165E212EDBACFC /* ArtworkColorExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkColorExtractor.swift; sourceTree = "<group>"; };
+		891388B9584DF225E041B69D /* GlassPulseRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassPulseRenderer.swift; sourceTree = "<group>"; };
+		8A70DE6C17ED12653BB02EEC /* MusicPlayerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicPlayerService.swift; sourceTree = "<group>"; };
+		9A2707A780413CF4448CA170 /* VolumeHUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeHUDView.swift; sourceTree = "<group>"; };
+		9F2A643317C8E18322EB9101 /* AccessibilityTrust.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityTrust.swift; sourceTree = "<group>"; };
+		AD1FA08FB361D642250AF120 /* SpectrumRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectrumRenderer.swift; sourceTree = "<group>"; };
+		AFCE106ACBFBCBED3D12DDD7 /* PremiumVisualizerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumVisualizerView.swift; sourceTree = "<group>"; };
+		B2481DF0A0B18EC45EB0A973 /* VisualizerModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualizerModels.swift; sourceTree = "<group>"; };
+		C15AAE3A887B02B3A7402983 /* BluetoothMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothMonitor.swift; sourceTree = "<group>"; };
+		C2A99B15D01B0F80F6DE0D8C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		C2C230004F396BF864AA32CE /* VisualizerStudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualizerStudioView.swift; sourceTree = "<group>"; };
+		D8631486A5B0970AAFB47E0A /* NotchContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchContainerView.swift; sourceTree = "<group>"; };
+		DA9DB4156292708BF23D0DA5 /* NotchShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchShape.swift; sourceTree = "<group>"; };
+		E5E12D04DAB5C8F4EAB5C1B1 /* BrightnessMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrightnessMonitor.swift; sourceTree = "<group>"; };
+		F32CA9FD52B5584B8AD7E79B /* AudioSpectrumAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSpectrumAnalyzer.swift; sourceTree = "<group>"; };
+		F5A69ACF962AEDE189F98649 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		03056706DEE0B10DB85CB8A2 /* Renderers */ = {
+			isa = PBXGroup;
+			children = (
+				35B080926DF8245D43C814A0 /* AdaptiveRenderer.swift */,
+				48BBCD9373206882C5394743 /* AppleClassicRenderer.swift */,
+				45420DA974AFFB691A2ED360 /* CenterEqualizerRenderer.swift */,
+				5DFA56EA877D6E5C1C2FD4A4 /* EnergyRingRenderer.swift */,
+				891388B9584DF225E041B69D /* GlassPulseRenderer.swift */,
+				0B0CE2734131E4303318A128 /* LiquidFlowRenderer.swift */,
+				AD1FA08FB361D642250AF120 /* SpectrumRenderer.swift */,
+			);
+			path = Renderers;
+			sourceTree = "<group>";
+		};
+		1317E9C6A88D883F233C68F3 /* Bluetooth */ = {
+			isa = PBXGroup;
+			children = (
+				C15AAE3A887B02B3A7402983 /* BluetoothMonitor.swift */,
+			);
+			path = Bluetooth;
+			sourceTree = "<group>";
+		};
+		169D300DD0731BE0FC20E230 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				3023490E670A10EC38870B12 /* Assets.xcassets */,
+				25DADCEBA9C483C729B69388 /* Glint.entitlements */,
+				F5A69ACF962AEDE189F98649 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		2B3D335C5BD55A11AE41FA0D /* VisualizerStudio */ = {
+			isa = PBXGroup;
+			children = (
+				B2481DF0A0B18EC45EB0A973 /* VisualizerModels.swift */,
+				4CA860F6633D9A21ED34902E /* VisualizerRenderer.swift */,
+				C2C230004F396BF864AA32CE /* VisualizerStudioView.swift */,
+				03056706DEE0B10DB85CB8A2 /* Renderers */,
+			);
+			path = VisualizerStudio;
+			sourceTree = "<group>";
+		};
+		34FFFA4DD72DDC1D34251A00 /* Display */ = {
+			isa = PBXGroup;
+			children = (
+				E5E12D04DAB5C8F4EAB5C1B1 /* BrightnessMonitor.swift */,
+				0D9EBD0E88A74256E27D78A5 /* MediaKeyInterceptor.swift */,
+			);
+			path = Display;
+			sourceTree = "<group>";
+		};
+		491278DA69F98EFC9861634B /* Notch */ = {
+			isa = PBXGroup;
+			children = (
+				DA9DB4156292708BF23D0DA5 /* NotchShape.swift */,
+				42F3142CC36AF7DC78A84382 /* NotchViewModel.swift */,
+				49ADDA4ED9AC39525E649973 /* NotchWindow.swift */,
+			);
+			path = Notch;
+			sourceTree = "<group>";
+		};
+		6240E5408FE062EC2350FC8D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				200F20B5FB8D82FE6DBB6CD8 /* BatteryNotificationView.swift */,
+				11720B1A79E6F8C38BAE7B7B /* BluetoothNotificationView.swift */,
+				3946B7E36480627917A4E035 /* BrightnessHUDView.swift */,
+				5DB02CC6C0E49EF8581A0D8F /* CompactMusicView.swift */,
+				0FD2185325C3E24CA752A880 /* ExpandedMusicView.swift */,
+				4A4B31C819905A290F5B086A /* GreetingView.swift */,
+				D8631486A5B0970AAFB47E0A /* NotchContainerView.swift */,
+				5E6DE990B652FD5B003CACDE /* NowPlayingNotificationView.swift */,
+				AFCE106ACBFBCBED3D12DDD7 /* PremiumVisualizerView.swift */,
+				9A2707A780413CF4448CA170 /* VolumeHUDView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		910C9DB62118D877102E3508 /* Battery */ = {
+			isa = PBXGroup;
+			children = (
+				0C06226DB4B27295059A8487 /* BatteryMonitor.swift */,
+			);
+			path = Battery;
+			sourceTree = "<group>";
+		};
+		BB4ECEBC994408CE9F33EC5A /* Glint */ = {
+			isa = PBXGroup;
+			children = (
+				CE6E633968E3B9EE7F187610 /* App */,
+				CEA1507E2048F49F096F60A7 /* Audio */,
+				910C9DB62118D877102E3508 /* Battery */,
+				1317E9C6A88D883F233C68F3 /* Bluetooth */,
+				34FFFA4DD72DDC1D34251A00 /* Display */,
+				DC478D43C4A7793B4579D227 /* Music */,
+				491278DA69F98EFC9861634B /* Notch */,
+				169D300DD0731BE0FC20E230 /* Resources */,
+				C332E4773B68AD40CFCE3852 /* Settings */,
+				6240E5408FE062EC2350FC8D /* Views */,
+				2B3D335C5BD55A11AE41FA0D /* VisualizerStudio */,
+			);
+			path = Glint;
+			sourceTree = "<group>";
+		};
+		C332E4773B68AD40CFCE3852 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				C2A99B15D01B0F80F6DE0D8C /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		CE6E633968E3B9EE7F187610 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				9F2A643317C8E18322EB9101 /* AccessibilityTrust.swift */,
+				7CB74659D174004C620D538A /* GlintApp.swift */,
+				5FAD7D70E1D57697B0E0817D /* Preferences.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		CEA1507E2048F49F096F60A7 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				F32CA9FD52B5584B8AD7E79B /* AudioSpectrumAnalyzer.swift */,
+				3CD617C17ABC031F1C362D0A /* VolumeMonitor.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		DC478D43C4A7793B4579D227 /* Music */ = {
+			isa = PBXGroup;
+			children = (
+				873BA54F54165E212EDBACFC /* ArtworkColorExtractor.swift */,
+				8A70DE6C17ED12653BB02EEC /* MusicPlayerService.swift */,
+			);
+			path = Music;
+			sourceTree = "<group>";
+		};
+		EA6921C9B6CB486D18C07534 = {
+			isa = PBXGroup;
+			children = (
+				BB4ECEBC994408CE9F33EC5A /* Glint */,
+				F0DEBFD467843DF4F582D172 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F0DEBFD467843DF4F582D172 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3E2E78BBA22734DD486C760B /* Glint.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		370743E3F9FFC81627C407C4 /* Glint */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4AC9F6345A7677531E105A3D /* Build configuration list for PBXNativeTarget "Glint" */;
+			buildPhases = (
+				86AD9E59837D6EEC7E56E0F0 /* Sources */,
+				15DB57E4B5291059A1FB8D4A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Glint;
+			packageProductDependencies = (
+			);
+			productName = Glint;
+			productReference = 3E2E78BBA22734DD486C760B /* Glint.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BE6DB378EC4FB00E8DB46BA7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					370743E3F9FFC81627C407C4 = {
+						DevelopmentTeam = VB36X5XLGX;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 086B69158E9278565399AC37 /* Build configuration list for PBXProject "Glint" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = EA6921C9B6CB486D18C07534;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = F0DEBFD467843DF4F582D172 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				370743E3F9FFC81627C407C4 /* Glint */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		15DB57E4B5291059A1FB8D4A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				942ED7C1C1A2E823BA52F67A /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		86AD9E59837D6EEC7E56E0F0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D80155FA37D321EBE93545D9 /* AccessibilityTrust.swift in Sources */,
+				5C3426B879683E0337B2364E /* AdaptiveRenderer.swift in Sources */,
+				D1037813FA8982C4F5DE59AF /* AppleClassicRenderer.swift in Sources */,
+				ECBB34178DC54F8555B039B8 /* ArtworkColorExtractor.swift in Sources */,
+				30AE0D3A8189AD70FC8A998B /* AudioSpectrumAnalyzer.swift in Sources */,
+				77B8808A57DB9ADF084605FB /* BatteryMonitor.swift in Sources */,
+				BF08FF5BC0500475659B3BDB /* BatteryNotificationView.swift in Sources */,
+				5A3AE5D925670DE1A6F61EE1 /* BluetoothMonitor.swift in Sources */,
+				C55B17803DB9DAE373B9A4C7 /* BluetoothNotificationView.swift in Sources */,
+				51D0E9648B65EA81C740BC43 /* BrightnessHUDView.swift in Sources */,
+				11F5F56DAD8C6CF78FD79BA9 /* BrightnessMonitor.swift in Sources */,
+				E30C4E870A91DE6A8CBDF10F /* CenterEqualizerRenderer.swift in Sources */,
+				63C68625AF3EE0720B446A0D /* CompactMusicView.swift in Sources */,
+				F8C6D9E93A9284726F3CC29C /* EnergyRingRenderer.swift in Sources */,
+				61B212C9FAE4FF01C83CEA74 /* ExpandedMusicView.swift in Sources */,
+				A8D563896C1996A8A5E0D91C /* GlassPulseRenderer.swift in Sources */,
+				CEA0A8FF66046FEFA80FAC0C /* GlintApp.swift in Sources */,
+				0C4518F08D430A6CE46A6BE1 /* GreetingView.swift in Sources */,
+				968147F1B85393D3A65F07D5 /* LiquidFlowRenderer.swift in Sources */,
+				38B976CCC36A986FDF498F41 /* MediaKeyInterceptor.swift in Sources */,
+				DFB32FFCCF7B6C59A3132364 /* MusicPlayerService.swift in Sources */,
+				4D9008AA82F48AEF7814DD17 /* NotchContainerView.swift in Sources */,
+				742AC7E278088512395A859A /* NotchShape.swift in Sources */,
+				68BCD72E53F553049B59966F /* NotchViewModel.swift in Sources */,
+				35D5971C30DA9FE0890DD876 /* NotchWindow.swift in Sources */,
+				AF33BEA83F8DE85F0F46CF04 /* NowPlayingNotificationView.swift in Sources */,
+				2C6018AB31CC55D0FCCB94E5 /* Preferences.swift in Sources */,
+				0077EF98BB4A62F705AA5200 /* PremiumVisualizerView.swift in Sources */,
+				9F546B105A2C720B74FC7D34 /* SettingsView.swift in Sources */,
+				1DDC54CFD52CCF0E6B59B75C /* SpectrumRenderer.swift in Sources */,
+				0D0C6509026CD9851FFBED81 /* VisualizerModels.swift in Sources */,
+				80A24DC6A7E900BB39541760 /* VisualizerRenderer.swift in Sources */,
+				43A64F40E60DB49D63F3259D /* VisualizerStudioView.swift in Sources */,
+				EF6A9492BE373177CFF0576E /* VolumeHUDView.swift in Sources */,
+				594FC815A79B9B781FC50225 /* VolumeMonitor.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2FF28DB47A88D5C96B620971 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Glint/Resources/Glint.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = VB36X5XLGX;
+				ENABLE_HARDENED_RUNTIME = NO;
+				INFOPLIST_FILE = Glint/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rutav.Glint;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		737FFBE4050FEC0AF1931C18 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		D716E255757C327EE86E1B65 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Glint/Resources/Glint.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = VB36X5XLGX;
+				ENABLE_HARDENED_RUNTIME = NO;
+				INFOPLIST_FILE = Glint/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rutav.Glint;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		E37AAD708771A94B3B8380A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		086B69158E9278565399AC37 /* Build configuration list for PBXProject "Glint" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				737FFBE4050FEC0AF1931C18 /* Debug */,
+				E37AAD708771A94B3B8380A6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		4AC9F6345A7677531E105A3D /* Build configuration list for PBXNativeTarget "Glint" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D716E255757C327EE86E1B65 /* Debug */,
+				2FF28DB47A88D5C96B620971 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BE6DB378EC4FB00E8DB46BA7 /* Project object */;
+}

@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Glint — the MacBook notch, finally earning its keep</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Glint turns the dead space around your MacBook notch into a Liquid Glass control center — Apple Music live activity with a real-audio equalizer, volume & brightness HUDs, Bluetooth banners, and battery alerts. Built in SwiftUI for macOS 26 Tahoe.">
+<meta property="og:title" content="Glint — the MacBook notch, finally earning its keep">
+<meta property="og:description" content="A Liquid Glass control center that lives inside the black rectangle Apple gave you.">
+<meta property="og:image" content="poster.jpg">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#06070B">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<!-- ambient background -->
+<div class="ambient" aria-hidden="true">
+  <div class="aurora a1"></div>
+  <div class="aurora a2"></div>
+  <div class="aurora a3"></div>
+  <div class="grain"></div>
+  <div class="vignette"></div>
+</div>
+
+<!-- reusable glyphs -->
+<svg width="0" height="0" class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="ic-shuffle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></symbol>
+  <symbol id="ic-prev" viewBox="0 0 24 24"><path fill="currentColor" d="M11 18V6l-8.5 6zM20 18V6l-8.5 6z"/></symbol>
+  <symbol id="ic-pause" viewBox="0 0 24 24"><path fill="currentColor" d="M7 5h3.4v14H7zM13.6 5H17v14h-3.4z"/></symbol>
+  <symbol id="ic-next" viewBox="0 0 24 24"><path fill="currentColor" d="M13 6v12l8.5-6zM4 6v12l8.5-6z"/></symbol>
+  <symbol id="ic-repeat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></symbol>
+  <symbol id="ic-bt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"/></symbol>
+  <symbol id="ic-batt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1.5" y="7.5" width="17" height="9" rx="2.4"/><rect x="3.5" y="9.5" width="11" height="5" rx="1" fill="currentColor" stroke="none"/><line x1="21" y1="10.5" x2="21" y2="13.5" stroke-linecap="round"/></symbol>
+  <symbol id="ic-bolt" viewBox="0 0 24 24"><polygon fill="currentColor" points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+</svg>
+
+<!-- ============ PINNED LIVE NOTCH (the signature) ============ -->
+<div class="notchbar" id="notchbar" aria-hidden="true">
+  <div class="menuline">
+    <span class="ml-left"><span class="apple"></span> Music <span>File</span> <span>Edit</span> <span>View</span></span>
+    <span class="ml-right"><span class="mono">100%</span> <span class="mono">9:41</span></span>
+  </div>
+  <div class="island" data-state="compact" id="island">
+    <div class="ear left">
+      <div class="pad">
+        <!-- compact art -->
+        <span class="mod m-compact"><span class="cover"><span class="cover-x">✕</span></span></span>
+        <!-- hud glyph -->
+        <span class="mod m-hud">
+          <svg class="g-vol" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M19 6a9 9 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg class="g-bright" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </span>
+        <!-- banner label -->
+        <span class="mod m-banner">
+          <span class="lab bl-bt">WH-CH510</span>
+          <span class="lab bl-batt">Charging</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="core"></div>
+
+    <div class="ear right">
+      <div class="pad">
+        <span class="mod m-compact"><span class="eq" id="eqNotch"></span></span>
+        <span class="mod m-hud"><span class="level"><i></i></span></span>
+        <span class="mod m-banner">
+          <span class="stat bl-bt"><svg class="i-bt" viewBox="0 0 24 24"><use href="#ic-bt"/></svg>50%<svg class="i-batt" viewBox="0 0 24 24"><use href="#ic-batt"/></svg></span>
+          <span class="stat bl-batt">80%<svg class="i-bolt" viewBox="0 0 24 24"><use href="#ic-bolt"/></svg></span>
+        </span>
+      </div>
+    </div>
+
+    <!-- expanded player drops below -->
+    <div class="player">
+      <span class="p-art"><span class="cover-x big">✕</span></span>
+      <div class="p-col">
+        <div class="p-title">Thinking Out Loud</div>
+        <div class="p-artist">Ed Sheeran</div>
+        <div class="p-bar"><i></i></div>
+        <div class="p-times mono"><span>1:03</span><span>-3:38</span></div>
+        <div class="p-controls">
+          <span class="pc sm"><svg viewBox="0 0 24 24"><use href="#ic-shuffle"/></svg></span>
+          <span class="pc"><svg viewBox="0 0 24 24"><use href="#ic-prev"/></svg></span>
+          <span class="pc big"><svg viewBox="0 0 24 24"><use href="#ic-pause"/></svg></span>
+          <span class="pc"><svg viewBox="0 0 24 24"><use href="#ic-next"/></svg></span>
+          <span class="pc sm"><svg viewBox="0 0 24 24"><use href="#ic-repeat"/></svg></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- top-right floating nav -->
+<nav class="topnav">
+  <a class="tn-link" href="#features">Features</a>
+  <a class="tn-link" href="#how">How it works</a>
+  <a class="tn-link" href="#install">Install</a>
+  <a class="tn-ghost" href="https://github.com/Roots26Hz/iNotch" target="_blank" rel="noopener">GitHub ↗</a>
+</nav>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="top">
+  <div class="hero-copy">
+    <p class="eyebrow">macOS 26 Tahoe · Liquid Glass · v1.0</p>
+    <h1 class="display">The notch,<br>finally earning<br><span class="grad">its keep.</span></h1>
+    <p class="lede">Your Mac's notch does nothing — a hole punched in your display where the menu bar goes to die. Glint turns that dead void into the most useful three centimeters of your screen: Apple Music, a real-audio equalizer, volume &amp; brightness HUDs, Bluetooth banners, and battery alerts — all blooming out of the notch in honest, refracting <em>Liquid Glass</em>.</p>
+    <div class="cta">
+      <a class="btn primary" href="Glint-1.0.dmg" download>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0l-4-4m4 4l4-4M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Download for macOS
+      </a>
+      <a class="btn ghost" href="https://github.com/Roots26Hz/iNotch" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.63.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.4 9.4 0 015 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.79-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.02 10.02 0 0022 12.25C22 6.58 17.52 2 12 2z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+    <p class="microcopy"><span class="mono">Universal · arm64 + x86_64</span> &nbsp;·&nbsp; not notarized — <a href="#install">one-time open</a> &nbsp;·&nbsp; <span class="good">zero telemetry</span></p>
+  </div>
+
+  <div class="hero-stage" id="heroStage">
+    <div class="lidframe" id="lidframe">
+      <div class="lid-notch"></div>
+      <video id="heroVideo" class="hero-video" src="inotch-ad-web.mp4" poster="poster.jpg" muted loop playsinline autoplay preload="metadata"></video>
+      <button class="sound" id="soundBtn" aria-label="Toggle sound">
+        <svg class="s-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/><line x1="17" y1="9" x2="22" y2="15"/><line x1="22" y1="9" x2="17" y2="15"/></svg>
+        <svg class="s-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/><path d="M16 8.5a5 5 0 0 1 0 7M19 6a9 9 0 0 1 0 12"/></svg>
+        <span class="mono">watch the film</span>
+      </button>
+    </div>
+    <div class="stage-caption mono">the promo film — 32s, shot on a real notch</div>
+  </div>
+
+  <a class="scrollcue" href="#features" aria-label="Scroll">
+    <span class="mono">scroll to see it work</span>
+    <span class="cue-dot"></span>
+  </a>
+</header>
+
+<!-- ============ FEATURE STORY ============ -->
+<section class="features" id="features">
+  <div class="section-head">
+    <p class="eyebrow">The tour</p>
+    <h2 class="h2">Six things it does<br>in the space of a bezel.</h2>
+    <p class="sub">Everything below is real — the notch up top is live. As you scroll, it performs each feature while the actual app sits beside the words.</p>
+  </div>
+
+  <!-- 01 -->
+  <article class="feat" data-state="compact" style="--glow: var(--cyan)">
+    <div class="feat-media">
+      <figure class="shot glossy">
+        <img src="compact.png" alt="Compact live activity: album art and a live equalizer tinted to the cover" loading="lazy">
+      </figure>
+    </div>
+    <div class="feat-copy">
+      <p class="feat-no mono">01 — Now Playing</p>
+      <h3 class="h3">The music, where your eyes already are.</h3>
+      <p>While Apple Music plays, the notch grows small <em>ears</em> — album artwork on the left, a soundwave on the right, tinted to the current cover. The default wave is a <strong>real equalizer</strong>: Glint taps Music's output and runs an FFT, so bass thumps the left bars and vocals ripple the right ones.</p>
+      <ul class="chips mono">
+        <li>FFT process tap</li><li>artwork-tinted</li><li>pauses &amp; lingers</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- 02 -->
+  <article class="feat rev" data-state="expanded" style="--glow: var(--peri)">
+    <div class="feat-media">
+      <figure class="shot glossy wide">
+        <img src="expanded.png" alt="Expanded Liquid Glass player with artwork, seekable progress bar, and transport controls" loading="lazy">
+      </figure>
+    </div>
+    <div class="feat-copy">
+      <p class="feat-no mono">02 — Hover to expand</p>
+      <h3 class="h3">A full Liquid Glass player<br>drops right down.</h3>
+      <p>Hover the notch and it morphs into artwork, title, a <strong>seekable</strong> progress bar, and shuffle / previous / play / next / repeat. Everything is springy — play <em>morphs</em> into pause, skip glyphs bounce, and active shuffle/repeat glow in the album's color. It even works when nothing's playing, so you can start a track without ever opening Music.</p>
+      <ul class="chips mono">
+        <li>real glassEffect</li><li>seek &amp; skip</li><li>color-adaptive</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- 03 -->
+  <article class="feat" data-state="volume" style="--glow: #fff">
+    <div class="feat-media">
+      <figure class="shot glossy">
+        <img src="volume.png" alt="Volume HUD in the notch — speaker glyph and level bar" loading="lazy">
+      </figure>
+    </div>
+    <div class="feat-copy">
+      <p class="feat-no mono">03 — Volume &amp; Brightness</p>
+      <h3 class="h3">The HUDs that replace<br>macOS's own pill.</h3>
+      <p>Tap the volume or brightness keys and the level appears <em>in the notch</em> — speaker glyph and level bar, sun glyph and all. Glint handles the keys itself, so the Control Center pill <strong>never shows up</strong>. One toggle brings the system overlay back; quitting always restores it. Brightness reacts to key presses only — auto-brightness stays silent.</p>
+      <ul class="chips mono">
+        <li>CoreAudio listeners</li><li>1/16 steps · ⌥⇧ ¼</li><li>hides the pill</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- brightness beat (notch-only state, shares the HUD screenshot vibe) -->
+  <article class="feat rev slim" data-state="brightness" style="--glow: var(--gold)">
+    <div class="feat-media">
+      <figure class="shot minimal">
+        <div class="mini-notch"><span class="mn-sun">☀</span><span class="mn-core"></span><span class="mn-bar"><i></i></span></div>
+      </figure>
+    </div>
+    <div class="feat-copy">
+      <p class="feat-no mono">03½ — Brightness, the same way</p>
+      <h3 class="h3">Sun glyph. Same glass. Same silence from macOS.</h3>
+      <p>Brightness mirrors volume exactly — the notch shows the level, the system overlay stays gone. Because macOS never delivers those media keys to normal apps, Glint reads them through a CGEvent tap that passes every other keystroke straight through, untouched.</p>
+      <ul class="chips mono">
+        <li>CGEvent tap</li><li>DisplayServices level</li><li>built-in display</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- 04 -->
+  <article class="feat" data-state="bluetooth" style="--glow: var(--cyan)">
+    <div class="feat-media">
+      <figure class="shot glossy">
+        <img src="bluetooth.png" alt="Bluetooth connection banner showing device name, icon and battery percentage" loading="lazy">
+      </figure>
+    </div>
+    <div class="feat-copy">
+      <p class="feat-no mono">04 — Bluetooth</p>
+      <h3 class="h3">See exactly what<br>just connected.</h3>
+      <p>Plug in headphones, a keyboard, or a mouse and an iOS-style banner shows the <strong>device name, icon, and battery %</strong> — a "Connected" badge stands in when a device doesn't report its level. Classic Bluetooth plus BLE keyboards and mice, straight from IOBluetooth and IOHIDManager.</p>
+      <ul class="chips mono">
+        <li>IOBluetooth</li><li>IOHIDManager</li><li>battery at a glance</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- 05 -->
+  <article class="feat rev" data-state="battery" style="--glow: var(--good)">
+    <div class="feat-media">
+      <figure class="shot glossy">
+        <img src="charger.png" alt="Charger and battery banner — Charging 80% with a bolt glyph" loading="lazy">
+      </figure>
+    </div>
+    <div class="feat-copy">
+      <p class="feat-no mono">05 — Battery</p>
+      <h3 class="h3">A charge you can trust.</h3>
+      <p>Plug/unplug banners, a configurable <strong>low-battery alert</strong>, a <em>Fully Charged</em> banner at 100%, and a <em>Charge Limit</em> banner when macOS deliberately stops early. All straight from the IOKit power source — no polling, no guessing.</p>
+      <ul class="chips mono">
+        <li>IOKit power source</li><li>low / full / limit</li><li>auto-dismiss</li>
+      </ul>
+    </div>
+  </article>
+
+  <div class="adaptive">
+    <p class="eyebrow">One more thing</p>
+    <h3 class="h3 center">Every surface adapts to your artwork.</h3>
+    <p class="center sub">A tiny dominant-color extractor downsamples the cover to 24×24, scores it with a saturation bias, and clamps for contrast — then tints the visualizer, the progress bar, the play-button glass, and a subtle background wash. It always reads on glass.</p>
+    <div class="swatches" id="swatches"></div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="how" id="how">
+  <div class="section-head">
+    <p class="eyebrow">Under the glass</p>
+    <h2 class="h2">A small, honest state machine —<br>wired to the system's real signals.</h2>
+    <p class="sub">Most notch apps are a pretty overlay with a stopwatch behind them. Glint is a non-activating panel pinned over the hardware notch, driven by public APIs almost everywhere — with only two tiny, read-only exceptions.</p>
+  </div>
+
+  <div class="how-grid">
+    <div class="how-card span2">
+      <p class="feat-no mono">The state machine</p>
+      <div class="machine">
+        <span class="node">Idle</span><span class="arrow">▶</span>
+        <span class="node on">Compact</span><span class="arrow">▶</span>
+        <span class="node">Expanded</span>
+        <div class="transients mono">＋ transient over any state: Volume · Brightness · Bluetooth · Battery</div>
+      </div>
+      <p class="how-note">Idle → compact → expanded, with HUDs and banners riding on top as auto-dismissing transients. SwiftUI morphs between states with springs and Liquid Glass — <span class="mono">glassEffect · GlassEffectContainer · glassEffectID</span>.</p>
+    </div>
+
+    <div class="how-card">
+      <p class="feat-no mono">Signal sources</p>
+      <ul class="sources">
+        <li><b>Apple Music</b><span>playerInfo notification + AppleScript</span></li>
+        <li><b>CoreAudio</b><span>output-device listeners + process-tap FFT</span></li>
+        <li><b>Bluetooth</b><span>IOBluetooth + IOHIDManager</span></li>
+        <li><b>Power</b><span>IOKit power source</span></li>
+        <li><b>Brightness</b><span>CGEvent tap + DisplayServices</span></li>
+      </ul>
+    </div>
+
+    <div class="how-card">
+      <p class="feat-no mono">The window</p>
+      <p class="how-note">A borderless, <b>non-activating</b> <span class="mono">NSPanel</span> at status-bar level renders your content without ever stealing focus from the app you're in. It joins all Spaces and floats over full-screen apps. When nothing's happening it's <b>pure black</b> — indistinguishable from the bezel.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRIVACY ============ -->
+<section class="privacy">
+  <div class="priv-inner">
+    <span class="priv-glyph good">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+    </span>
+    <h2 class="h2">No telemetry. No analytics.<br>No network calls at all.</h2>
+    <p class="sub">The equalizer runs a local FFT on Music's output purely to draw bars — <b>nothing is stored, nothing is sent anywhere</b>, and macOS shows its recording indicator the whole time so you can see exactly when it's active. Every permission it asks for is read-only or purely local.</p>
+    <div class="perms">
+      <div class="perm"><span class="mono">Automation</span><p>Play / pause / skip Apple Music. The only automation it performs.</p></div>
+      <div class="perm"><span class="mono">Bluetooth</span><p>Observe device connections for the banners. Nothing else.</p></div>
+      <div class="perm"><span class="mono">Accessibility</span><p>Notice manual brightness/volume keys — and hide the system pill.</p></div>
+      <div class="perm"><span class="mono">Audio Recording</span><p>Feed the equalizer FFT. Denied → silently falls back to the visualizer.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INSTALL ============ -->
+<section class="install" id="install">
+  <div class="section-head">
+    <p class="eyebrow">Get it running</p>
+    <h2 class="h2">Four steps, once.</h2>
+    <p class="sub">The DMG is a universal binary but isn't notarized (that needs a paid Apple account), so macOS blocks the very first open. Unblocking is a one-time dance — building from source skips it entirely.</p>
+  </div>
+  <ol class="steps">
+    <li><span class="step-n mono">1</span><div><b>Download &amp; drag.</b> Open the DMG and drag <b>Glint</b> onto Applications.</div></li>
+    <li><span class="step-n mono">2</span><div><b>Open it once.</b> macOS refuses — click <b>Done</b>, <em>not</em> "Move to Trash".</div></li>
+    <li><span class="step-n mono">3</span><div><b>Allow it.</b> System Settings → Privacy &amp; Security → scroll down → <b>Open Anyway</b>.</div></li>
+    <li><span class="step-n mono">4</span><div><b>Open again.</b> It launches normally from now on. Grant the four permissions it asks for.</div></li>
+  </ol>
+  <div class="terminal">
+    <div class="term-bar"><span></span><span></span><span></span> <span class="mono">shortcut for steps 2–3</span></div>
+    <code class="mono">xattr -dr com.apple.quarantine /Applications/Glint.app</code>
+  </div>
+  <div class="req mono">Requires macOS 26 (Tahoe) · the Apple Music app · a MacBook with a notch (others get a Dynamic-Island-style pseudo-notch).</div>
+
+  <div class="finalcta">
+    <a class="btn primary lg" href="Glint-1.0.dmg" download>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0l-4-4m4 4l4-4M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Download Glint <span class="mono">v1.0 · 1.8 MB</span>
+    </a>
+    <a class="btn ghost lg" href="https://github.com/Roots26Hz/iNotch" target="_blank" rel="noopener">Star on GitHub</a>
+    <a class="reltext mono" href="https://github.com/Roots26Hz/iNotch/releases" target="_blank" rel="noopener">or browse all releases ↗</a>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="foot">
+  <div class="foot-top">
+    <div class="foot-brand">
+      <img src="icon.png" alt="Glint" width="52" height="52">
+      <div>
+        <div class="fb-name grad">Glint</div>
+        <div class="fb-tag mono">made for the hole in your display</div>
+      </div>
+    </div>
+    <div class="foot-links">
+      <a href="Glint-1.0.dmg" download>Download</a>
+      <a href="https://github.com/Roots26Hz/iNotch" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/Roots26Hz/iNotch/releases" target="_blank" rel="noopener">Releases</a>
+      <a href="#top">Back to top</a>
+    </div>
+  </div>
+  <div class="builtwith mono">
+    <span>Built with</span>
+    SwiftUI · Liquid&nbsp;Glass · AppKit&nbsp;NSPanel · Core&nbsp;Audio&nbsp;tap&nbsp;+&nbsp;FFT · IOBluetooth · IOHIDManager · IOKit · CGEvent&nbsp;taps · DisplayServices · AppleScript · XcodeGen
+  </div>
+  <div class="foot-legal mono">© 2026 · not affiliated with Apple · because the notch was always meant to <span class="grad">do something.</span></div>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>

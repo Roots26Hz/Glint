@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Builds a Release iNotch.app and packages it as a drag-to-install DMG in
+# Builds a Release Glint.app and packages it as a drag-to-install DMG in
 # dist/. Run from anywhere:
 #
 #   scripts/package-dmg.sh
@@ -13,30 +13,30 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-APPICONSET="iNotch/Resources/Assets.xcassets/AppIcon.appiconset"
-VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" iNotch/Resources/Info.plist)
-DMG="dist/iNotch-${VERSION}.dmg"
+APPICONSET="Glint/Resources/Assets.xcassets/AppIcon.appiconset"
+VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" Glint/Resources/Info.plist)
+DMG="dist/Glint-${VERSION}.dmg"
 
-rm -rf dist/staging dist/iNotch.iconset dist/iNotch.icns "$DMG"
-mkdir -p dist/staging dist/iNotch.iconset
+rm -rf dist/staging dist/Glint.iconset dist/Glint.icns "$DMG"
+mkdir -p dist/staging dist/Glint.iconset
 
 echo "── Building Release (universal, distribution entitlements)…"
 xcodegen generate --quiet
 # CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO drops the get-task-allow debug
 # entitlement Xcode injects for development signing — shipping it makes
 # other Macs refuse to open the app.
-xcodebuild -project iNotch.xcodeproj -scheme iNotch -configuration Release \
+xcodebuild -project Glint.xcodeproj -scheme Glint -configuration Release \
     -derivedDataPath dist/DerivedData \
     CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO \
     ONLY_ACTIVE_ARCH=NO ARCHS="arm64 x86_64" \
     build | tail -2
 
-APP="dist/DerivedData/Build/Products/Release/iNotch.app"
+APP="dist/DerivedData/Build/Products/Release/Glint.app"
 
 # Re-sign with a secure timestamp so the signature outlives the yearly
 # Apple Development certificate expiry.
 codesign --force --timestamp \
-    --entitlements iNotch/Resources/iNotch.entitlements \
+    --entitlements Glint/Resources/Glint.entitlements \
     --sign "Apple Development" "$APP"
 
 echo "── Verifying distribution readiness…"
@@ -45,7 +45,7 @@ if codesign -d --entitlements - "$APP" 2>/dev/null | grep -q get-task-allow; the
     echo "ERROR: get-task-allow is still present — other Macs would refuse to open this build" >&2
     exit 1
 fi
-ARCHS_FOUND=$(lipo -archs "$APP/Contents/MacOS/iNotch")
+ARCHS_FOUND=$(lipo -archs "$APP/Contents/MacOS/Glint")
 case "$ARCHS_FOUND" in
     *arm64*x86_64*|*x86_64*arm64*) ;;
     *) echo "ERROR: expected a universal binary, got: $ARCHS_FOUND" >&2; exit 1 ;;
@@ -68,50 +68,54 @@ declare -a MAP=(
 )
 for pair in "${MAP[@]}"; do
     src=${pair%% *}; dst=${pair##* }
-    cp "$APPICONSET/$src" "dist/iNotch.iconset/$dst"
+    cp "$APPICONSET/$src" "dist/Glint.iconset/$dst"
 done
-iconutil -c icns dist/iNotch.iconset -o dist/iNotch.icns
+iconutil -c icns dist/Glint.iconset -o dist/Glint.icns
 
 echo "── Creating DMG…"
 cp -R "$APP" dist/staging/
-# iNotch isn't notarized (free developer account), so macOS blocks the very
+# Glint isn't notarized (free developer account), so macOS blocks the very
 # first open on other Macs; put the unblock steps inside the DMG where they
 # can't be missed.
 cat > "dist/staging/HOW TO INSTALL.txt" <<'EOF'
-INSTALLING iNOTCH
+INSTALLING GLINT
 =================
 
-1. Drag iNotch onto the Applications folder in this window.
+1. Drag Glint onto the Applications folder in this window.
 
-2. Open iNotch from Applications. macOS will say it "cannot be
+2. Open Glint from Applications. macOS will say it "cannot be
    opened" or could not verify it is free of malware — that is
-   expected: iNotch is an open-source app that is not notarized
+   expected: Glint is an open-source app that is not notarized
    by Apple (that requires a paid developer account). Click
    "Done" — NOT "Move to Trash".
 
 3. Open System Settings → Privacy & Security, scroll to the
-   bottom, and click "Open Anyway" next to the iNotch message.
+   bottom, and click "Open Anyway" next to the Glint message.
    Do this within an hour of step 2, then confirm.
 
-4. iNotch now opens normally, this was a one-time step. Grant
+4. Glint now opens normally, this was a one-time step. Grant
    the permissions it asks for (Music automation, Bluetooth,
    Accessibility, System Audio Recording) — each one powers a
    notch feature and nothing is stored or sent anywhere.
 
 Terminal alternative to steps 2-3:
-   xattr -dr com.apple.quarantine /Applications/iNotch.app
+   xattr -dr com.apple.quarantine /Applications/Glint.app
 EOF
+echo "── Rendering DMG background…"
+swift scripts/generate-dmg-background.swift
+
 create-dmg \
-    --volname "iNotch" \
-    --volicon dist/iNotch.icns \
-    --window-size 540 440 \
+    --volname "Glint" \
+    --background dist/dmg-background.png \
+    --volicon dist/Glint.icns \
+    --window-size 660 420 \
     --icon-size 128 \
-    --icon "iNotch.app" 140 165 \
-    --app-drop-link 400 165 \
-    --icon "HOW TO INSTALL.txt" 270 330 \
-    --hide-extension "iNotch.app" \
+    --icon "Glint.app" 165 220 \
+    --app-drop-link 495 220 \
+    --icon "HOW TO INSTALL.txt" 330 385 \
+    --hide-extension "Glint.app" \
     "$DMG" \
     dist/staging
 
-rm -rf dist/staging dist/iNotch.iconset
+rm -rf dist/staging dist/Glint.iconset
 echo "── Done: $DMG ($(du -h "$DMG" | cut -f1 | tr -d ' '))"

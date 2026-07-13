@@ -16,3 +16,6 @@ dist/
 # Swift Package Manager
 .swiftpm/
 .build/
+docs/AlbumArtWork
+bouncemusic.mp3
+screenrecording.mov

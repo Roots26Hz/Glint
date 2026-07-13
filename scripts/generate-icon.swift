@@ -1,6 +1,6 @@
 #!/usr/bin/env swift
 //
-// Renders the iNotch app icon and writes every size the asset catalog needs,
+// Renders the Glint app icon and writes every size the asset catalog needs,
 // plus docs/icon.png for the README and the monochrome menu-bar template
 // glyph (MenuBarIcon imageset). Run from anywhere:
 //
@@ -16,7 +16,7 @@ import AppKit
 let scriptURL = URL(fileURLWithPath: #filePath)
 let repoRoot = scriptURL.deletingLastPathComponent().deletingLastPathComponent()
 let appIconSet = repoRoot.appendingPathComponent(
-    "iNotch/Resources/Assets.xcassets/AppIcon.appiconset"
+    "Glint/Resources/Assets.xcassets/AppIcon.appiconset"
 )
 let docsDir = repoRoot.appendingPathComponent("docs")
 
@@ -123,6 +123,37 @@ func renderMaster() -> NSBitmapImageRep {
         .draw(in: barRegion, angle: 90)
     NSGraphicsContext.current?.restoreGraphicsState()
 
+    // The glint: a four-point sparkle catching the light off the tallest bar.
+    func sparklePath(cx: CGFloat, cy: CGFloat, r: CGFloat) -> NSBezierPath {
+        let pinch = r * 0.16
+        let path = NSBezierPath()
+        path.move(to: NSPoint(x: cx, y: cy + r))
+        path.curve(to: NSPoint(x: cx + r, y: cy),
+                   controlPoint1: NSPoint(x: cx + pinch, y: cy + pinch),
+                   controlPoint2: NSPoint(x: cx + pinch, y: cy + pinch))
+        path.curve(to: NSPoint(x: cx, y: cy - r),
+                   controlPoint1: NSPoint(x: cx + pinch, y: cy - pinch),
+                   controlPoint2: NSPoint(x: cx + pinch, y: cy - pinch))
+        path.curve(to: NSPoint(x: cx - r, y: cy),
+                   controlPoint1: NSPoint(x: cx - pinch, y: cy - pinch),
+                   controlPoint2: NSPoint(x: cx - pinch, y: cy - pinch))
+        path.curve(to: NSPoint(x: cx, y: cy + r),
+                   controlPoint1: NSPoint(x: cx - pinch, y: cy + pinch),
+                   controlPoint2: NSPoint(x: cx - pinch, y: cy + pinch))
+        path.close()
+        return path
+    }
+    NSGraphicsContext.current?.saveGraphicsState()
+    let sparkleGlow = NSShadow()
+    sparkleGlow.shadowOffset = .zero
+    sparkleGlow.shadowBlurRadius = 34
+    sparkleGlow.shadowColor = NSColor.white.withAlphaComponent(0.9)
+    sparkleGlow.set()
+    NSColor.white.setFill()
+    sparklePath(cx: content.midX + 208, cy: baseline + 420, r: 58).fill()
+    sparklePath(cx: content.midX + 268, cy: baseline + 330, r: 26).fill()
+    NSGraphicsContext.current?.restoreGraphicsState()
+
     // Glass highlight washing down from the top edge.
     NSGradient(
         starting: NSColor.white.withAlphaComponent(0.13),
@@ -221,7 +252,7 @@ func renderMenuGlyph(_ pixels: Int) -> NSBitmapImageRep {
 }
 
 let menuIconSet = repoRoot.appendingPathComponent(
-    "iNotch/Resources/Assets.xcassets/MenuBarIcon.imageset"
+    "Glint/Resources/Assets.xcassets/MenuBarIcon.imageset"
 )
 try FileManager.default.createDirectory(at: menuIconSet, withIntermediateDirectories: true)
 let menuContents = """

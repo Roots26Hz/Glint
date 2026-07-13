@@ -1,4 +1,4 @@
-name: iNotch
+name: Glint
 options:
   bundleIdPrefix: com.rutav
   deploymentTarget:
@@ -6,33 +6,35 @@ options:
   createIntermediateGroups: true
 
 targets:
-  iNotch:
+  Glint:
     type: application
     platform: macOS
     sources:
-      - iNotch
+      - Glint
     info:
-      path: iNotch/Resources/Info.plist
+      path: Glint/Resources/Info.plist
       properties:
-        CFBundleDisplayName: iNotch
+        CFBundleDisplayName: Glint
         LSUIElement: true
-        NSAppleEventsUsageDescription: iNotch reads what's playing in Apple Music and controls playback from the notch.
-        NSBluetoothAlwaysUsageDescription: iNotch shows a notch banner when a Bluetooth device connects.
-        NSAudioCaptureUsageDescription: iNotch analyzes Apple Music's audio to animate the notch equalizer to the song.
+        NSAppleEventsUsageDescription: Glint reads what's playing in Apple Music and controls playback from the notch.
+        NSBluetoothAlwaysUsageDescription: Glint shows a notch banner when a Bluetooth device connects.
+        NSAudioCaptureUsageDescription: Glint analyzes Apple Music's audio to animate the notch equalizer to the song.
         LSApplicationCategoryType: public.app-category.utilities
     entitlements:
-      path: iNotch/Resources/iNotch.entitlements
+      path: Glint/Resources/Glint.entitlements
       properties:
         com.apple.security.automation.apple-events: true
     settings:
       base:
         SWIFT_VERSION: "5.0"
         MACOSX_DEPLOYMENT_TARGET: "26.0"
-        PRODUCT_BUNDLE_IDENTIFIER: com.rutav.iNotch
+        PRODUCT_BUNDLE_IDENTIFIER: com.rutav.Glint
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        # Changed to ad-hoc signing so you can build locally without a Developer Account.
-        # Note: You may need to re-grant permissions (Accessibility, etc.) after each build.
-        CODE_SIGN_IDENTITY: "-"
-        CODE_SIGN_STYLE: Manual
+        # Stable developer-cert signing: TCC permissions (Accessibility etc.)
+        # are tied to the signing identity, so ad-hoc signing would silently
+        # invalidate them on every rebuild. Keep this on Apple Development.
+        CODE_SIGN_IDENTITY: "Apple Development"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: VB36X5XLGX
         ENABLE_HARDENED_RUNTIME: false
         COMBINE_HIDPI_IMAGES: true
