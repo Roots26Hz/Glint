@@ -191,6 +191,7 @@ export function VisualiserStudio() {
         ref={audioRef} 
         src="/assets/bouncemusic.mp3" 
         loop 
+        crossOrigin="anonymous"
         onEnded={() => setIsPlaying(false)} 
       />
       
