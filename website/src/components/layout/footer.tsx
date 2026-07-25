@@ -24,6 +24,9 @@ export function Footer() {
           <Link href="#features" className="hover:text-white transition-colors">
             Features
           </Link>
+          <Link href="#about" className="hover:text-white transition-colors">
+            About Us
+          </Link>
           <Link href="#visualiser" className="hover:text-white transition-colors">
             Visualiser
           </Link>
@@ -35,7 +38,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row items-center gap-6 text-sm text-white/50">
           <span>&copy; {currentYear} Glint. All rights reserved.</span>
           <Link
-            href="https://github.com"
+            href="https://github.com/Roots26Hz/Glint"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 hover:text-white transition-colors"

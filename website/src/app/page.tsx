@@ -5,6 +5,7 @@ import { FeatureShowcase } from "@/components/sections/feature-showcase";
 import { AlbumArtworkShowcase } from "@/components/sections/album-artwork-showcase";
 import { VisualiserStudio } from "@/components/sections/visualiser-studio";
 import { DownloadSection } from "@/components/sections/download-section";
+import { AboutSection } from "@/components/sections/about-section";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
         <FeatureShowcase />
         <VisualiserStudio />
         <AlbumArtworkShowcase />
+        <AboutSection />
         <DownloadSection />
       </main>
 

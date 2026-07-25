@@ -1,198 +1,102 @@
 <div align="center">
 
-<img src="docs/icon.png" width="150" alt="Glint icon">
+<img src="docs/GLINTLOGOANDARTWORK.png" width="620" alt="Glint">
 
 # Glint
 
 ### The MacBook notch, finally earning its keep.
 
-**A Liquid Glass control center that lives inside the black rectangle Apple gave you** — Apple Music live activity, a real-audio equalizer, volume &amp; brightness HUDs, Bluetooth banners, and battery alerts — all blooming out of the notch and blurring into whatever's behind them.
+**A Liquid Glass control center that lives inside the black rectangle Apple gave you** — Apple Music live activity with a real‑audio equalizer, volume &amp; brightness HUDs, Bluetooth banners, and battery alerts, all blooming out of the notch and adapting to whatever's playing.
 
 <br>
 
 ![macOS](https://img.shields.io/badge/macOS-26_Tahoe-000000?style=for-the-badge&logo=apple&logoColor=white)
-![Swift](https://img.shields.io/badge/Swift_6-F05138?style=for-the-badge&logo=swift&logoColor=white)
-![SwiftUI](https://img.shields.io/badge/SwiftUI-Liquid_Glass-1E90FF?style=for-the-badge&logo=swift&logoColor=white)
-![Binary](https://img.shields.io/badge/Universal-arm64_+_x86__64-8A2BE2?style=for-the-badge)
+![Swift](https://img.shields.io/badge/Swift_5-F05138?style=for-the-badge&logo=swift&logoColor=white)
+![SwiftUI](https://img.shields.io/badge/SwiftUI-Liquid_Glass-4FD8FF?style=for-the-badge&logo=swift&logoColor=white)
+![Universal](https://img.shields.io/badge/Universal-arm64_+_x86__64-8B5CFF?style=for-the-badge)
 
-![Menu bar app](https://img.shields.io/badge/lives_in-the_menu_bar-333?style=flat-square)
-![Public APIs](https://img.shields.io/badge/public_APIs-almost_everywhere-2ea44f?style=flat-square)
-![Notarized](https://img.shields.io/badge/notarized-not_yet_(need_a_%2499_account)-red?style=flat-square)
-![No telemetry](https://img.shields.io/badge/telemetry-absolutely_none-2ea44f?style=flat-square)
+![Menu bar app](https://img.shields.io/badge/lives_in-the_menu_bar-222?style=flat-square)
+![No telemetry](https://img.shields.io/badge/telemetry-absolutely_none-3BF5A6?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.0-4FD8FF?style=flat-square)
 
-<br>
-
-**[✨ Features](#-features) · [📸 Screenshots](#-screenshots) · [🧠 How it works](#-how-it-works) · [💿 Install](#-install-dmg) · [🛠 Build](#-build--run) · [🔐 Permissions](#-first-launch--permissions) · [❓ FAQ](#-faq)**
+**[✨ Features](#-features) · [📸 Screenshots](#-screenshots) · [💿 Install](#-installation) · [🎮 Usage](#-usage) · [🛠 Requirements](#-requirements) · [🧪 Built with](#-technologies-used)**
 
 </div>
 
 ---
 
-> Your Mac's notch does nothing. It's a hole punched in your display where the menu bar goes to die.
-> **Glint turns that dead pixel-void into the most useful three centimeters of your screen** — and it does it all in real, honest-to-Tahoe Liquid Glass, so every surface blurs, refracts, and color-adapts to your wallpaper and windows underneath.
+## 🔮 Overview
 
-Built from scratch in **SwiftUI for macOS 26 (Tahoe)**, using the system Liquid Glass material (`glassEffect`, `GlassEffectContainer`, `glassEffectID`) — not a fake blur, not a screenshot trick. When nothing's happening, the notch stays **pure black**, indistinguishable from the hardware bezel. When something *is* happening, it comes alive.
+Your Mac's notch does nothing — a hole punched in your display where the menu bar goes to die. **Glint turns that dead void into the most useful three centimeters of your screen.**
 
-<br>
+When nothing's happening, the notch stays **pure black**, indistinguishable from the hardware bezel. When something *is* happening — a track change, a volume tap, a charger plugged in, a headset connecting — Glint blooms out of the notch in real, honest **Liquid Glass** (`glassEffect`, `GlassEffectContainer`, `glassEffectID`), color‑adapting to your album art and refracting whatever's behind it. Built from scratch in SwiftUI for **macOS 26 (Tahoe)**.
+
+It runs entirely from the menu bar, keeps **zero telemetry**, and greets you with a neon **glint** signature every time it launches.
+
+---
 
 ## ✨ Features
 
-### 🎵 The music, where your eyes already are
+### 🎵 Apple Music, where your eyes already are
+- **Now Playing live activity** — while Apple Music plays, the notch grows small *ears*: album artwork on the left, a soundwave on the right, tinted to the current cover.
+- **Real‑audio equalizer** — the default soundwave taps Music's output through a Core Audio process tap and runs an FFT, so **bass thumps the left bars and vocals ripple the right ones**. Prefer a procedural look? Flip to the animated visualizer.
+- **Hover‑expanded player** — hover the notch and a full Liquid Glass player drops down: artwork, title/artist, a **seekable** progress bar, and shuffle / previous / play / next / repeat. The play button *morphs* into pause, skip glyphs bounce, and active shuffle/repeat glow in the album's color.
+- **Song‑change banner** — change tracks and a compact drop‑down card announces the new song, artwork and all.
+- **Artwork‑adaptive everything** — a built‑in dominant‑color extractor tints the visualizer, progress bar, play‑button glass, and a subtle background wash to match the cover, with legibility clamps so it always reads on glass.
 
-<table>
-<tr>
-<td width="50%" valign="top">
-
-**Now Playing live activity**
-While Apple Music plays, the notch grows small **"ears"** — album artwork on the left, a soundwave on the right, tinted to match the current cover.
-
-The default soundwave is a **real equalizer**: Glint taps Music's audio output and runs an FFT, splitting it into frequency bands so **bass thumps the left bars and vocals ripple the right ones.** Prefer the classic look? Flip to the animated visualizer in Settings.
-
-Pausing doesn't slam the notch shut — the activity **lingers with frozen bars** for a couple of minutes (adjustable) so a quick resume feels seamless.
-
-</td>
-<td width="50%" valign="top">
-
-**Hover-expanded player**
-Hover the notch and a **full Liquid Glass player** drops down: artwork, title/artist, a seekable progress bar, and shuffle / previous / play / next / repeat.
-
-Everything is **springy and fluid** — the play button *morphs* into pause, skip glyphs bounce, and active shuffle/repeat **glow in the album's color.**
-
-Works even when nothing's playing, so you can **start playback without ever opening Music** — the play button launches it and resumes your last queue.
-
-</td>
-</tr>
-</table>
-
-**🎨 Artwork-adaptive everything** — a built-in dominant-color extractor tints the visualizer, progress bar, play-button glass, and a subtle background wash to match the album art, with legibility clamps so it always reads on glass.
-
-### 🎛 The HUDs that replace macOS's own
-
-| | What it does |
-|---|---|
-| **🔊 Volume HUD** | Speaker glyph + level bar, right in the notch. Tracks held keys smoothly, handles mute, and follows output-device switches (AirPods, external DACs). |
-| **☀️ Brightness HUD** | Sun glyph + level bar. **Keyboard changes only** — auto-brightness (ambient light) stays silent, exactly as it should. |
-| **🫥 Overlay replacement** | By default Glint handles the volume/brightness keys itself, so the macOS Control Center pill **never appears** — the notch HUDs are the only ones you see. One toggle brings the system overlay back instantly, and quitting always restores it. |
+### 🎛 HUDs that replace the macOS pill
+- **Volume HUD** — speaker glyph + level bar, right in the notch. Tracks held keys smoothly, handles mute, follows output‑device switches.
+- **Brightness HUD** — sun glyph + level bar; reacts to **key presses only**, so auto‑brightness stays silent.
+- **System‑overlay replacement** — Glint handles the volume/brightness keys itself, so the macOS Control Center pill **never appears**. One toggle brings it back; quitting always restores it.
 
 ### 📡 Banners &amp; alerts that don't nag
+- **Bluetooth banners** — connect AirPods, headphones, a keyboard, or a mouse and an iOS‑style banner shows the **device name, icon, and battery %**. Wired EarPods are recognized too (with an EarPods glyph).
+- **Battery notifications** — charger plug/unplug banners, a configurable **low‑battery alert**, a **Fully Charged** banner at 100%, and a **Charge Limit** banner when macOS deliberately stops early.
 
-- **🎧 Bluetooth banners** — connect headphones, a keyboard, or a mouse and an iOS-style banner shows the **device name, icon, and battery %** (a "Connected" badge stands in for devices that don't report battery).
-- **🔋 Battery notifications** — charger plug/unplug banners, a configurable **low-battery alert**, a **Fully Charged** banner at 100%, and a **Charge Limit** banner when macOS deliberately stops early (the macOS 26 charge-limit setting, or an Optimized Battery Charging hold).
-- **🪟 Dock icon on demand** — Glint runs invisibly (menu bar only). Open Settings and a dock icon appears; close the window and it vanishes again.
-- **💎 Liquid Glass everywhere it belongs** — every *active* notch state is real translucent glass over your windows and wallpaper. The idle notch stays pure black, so it's invisible against the bezel.
+### 🪟 Control &amp; polish
+- **Menu‑bar control panel** — a mini control center: switches for every module, live sliders (hover delay, notification duration, low‑battery threshold), a soundwave‑style picker, and a **More Settings…** button.
+- **Launch greeting** — a premium neon **glint** signature writes itself in on every launch, then dissolves.
+- **Dock icon on demand** — Glint runs invisibly; open Settings and a Dock icon appears, close it and it vanishes.
+- **Zero telemetry** — no analytics, no network calls. The equalizer FFT runs locally; nothing is stored or sent anywhere.
 
-<br>
+---
 
 ## 📸 Screenshots
 
 <div align="center">
 
-<img src="docs/expanded.png" width="660" alt="Expanded Liquid Glass player">
-
-**Hover the notch → the full glass player drops down.** Artwork, seekable progress bar, and springy transport controls — tinted end to end by the album's dominant color.
-
-<br>
-
 <table>
   <tr>
-    <td align="center" width="50%">
-      <img src="docs/compact.png" width="100%" alt="Compact live activity"><br>
-      <b>🎵 Compact live activity</b><br>
-      <sub>album art + a <b>real-audio equalizer</b>, tinted to the cover</sub>
-    </td>
-    <td align="center" width="50%">
-      <img src="docs/volume.png" width="100%" alt="Volume HUD"><br>
-      <b>🔊 Volume HUD</b><br>
-      <sub>speaker glyph + level bar — replaces the macOS pill<br>(brightness mirrors it, sun glyph and all)</sub>
-    </td>
+    <td align="center" width="50%"><img src="docs/Glintscreenshots/expanded.png" width="100%" alt="Expanded player"><br><b>Hover‑expanded player</b><br><sub>artwork · seekable progress · glass transport controls</sub></td>
+    <td align="center" width="50%"><img src="docs/Glintscreenshots/compact.png" width="100%" alt="Compact live activity"><br><b>Now Playing live activity</b><br><sub>album art + real‑audio equalizer, tinted to the cover</sub></td>
   </tr>
   <tr>
-    <td align="center" width="50%">
-      <img src="docs/bluetooth.png" width="100%" alt="Bluetooth connection banner"><br>
-      <b>🎧 Bluetooth banner</b><br>
-      <sub>device name, icon, and battery % on connect</sub>
-    </td>
-    <td align="center" width="50%">
-      <img src="docs/charger.png" width="100%" alt="Charger / battery banner"><br>
-      <b>🔋 Charger &amp; battery banner</b><br>
-      <sub>plug / unplug, low-battery, fully-charged &amp; charge-limit</sub>
-    </td>
+    <td align="center"><img src="docs/Glintscreenshots/songcard.png" width="100%" alt="Song change card"><br><b>Song‑change banner</b><br><sub>the new track drops down from the notch</sub></td>
+    <td align="center"><img src="docs/Glintscreenshots/menupanel.png" width="100%" alt="Menu bar panel"><br><b>Menu‑bar control panel</b><br><sub>switches, sliders, and More Settings…</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/Glintscreenshots/volume.png" width="100%" alt="Volume HUD"><br><b>Volume HUD</b><br><sub>replaces the macOS Control Center pill</sub></td>
+    <td align="center"><img src="docs/Glintscreenshots/brightness.png" width="100%" alt="Brightness HUD"><br><b>Brightness HUD</b><br><sub>key presses only — never auto‑brightness</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/Glintscreenshots/bluetooth.png" width="100%" alt="Bluetooth banner"><br><b>Bluetooth banner</b><br><sub>device name, icon, and battery % on connect</sub></td>
+    <td align="center"><img src="docs/Glintscreenshots/charging.png" width="100%" alt="Charging banner"><br><b>Battery &amp; charging banner</b><br><sub>plug / unplug · low battery · fully charged · charge limit</sub></td>
   </tr>
 </table>
 
-<sub><i>All five states are real translucent Liquid Glass over your windows and wallpaper — the idle notch stays pure black.</i></sub>
-
 </div>
 
-<br>
+---
 
-## 🧠 How it works
-
-Most notch apps are a pretty overlay with a stopwatch behind them. Glint is a small, honest state machine wired straight into the system's real signal sources — **public APIs almost everywhere**, with only two tiny read-only exceptions.
-
-### The state machine
-
-A borderless, **non-activating** `NSPanel` is pinned over the hardware notch at status-bar level, so it renders your content **without ever stealing focus** from the app you're using. A compact state machine drives what's inside it:
-
-```mermaid
-stateDiagram-v2
-    [*] --> Idle
-    Idle --> Compact : ▶️ Music starts
-    Compact --> Expanded : 🖱️ hover
-    Expanded --> Compact : cursor leaves
-    Compact --> Idle : ⏹️ playback ends / ⏸️ linger expires
-
-    note right of Idle
-        Transients can surface over ANY
-        state, then auto-dismiss:
-        🔊 Volume   ☀️ Brightness
-        🎧 Bluetooth   🔋 Battery
-    end note
-```
-
-Idle → compact → expanded, with volume/brightness/Bluetooth/battery riding on top as **auto-dismissing transients**. The SwiftUI content morphs between states with springs and Liquid Glass (`glassEffect`, `GlassEffectContainer`, `glassEffectID`).
-
-### Where the signals come from
-
-```mermaid
-flowchart TD
-    subgraph Signals["📡 Signal sources — public APIs almost everywhere"]
-        M["🎵 Apple Music<br/>com.apple.Music.playerInfo notification<br/>+ AppleScript reads"]
-        CA["🔊 CoreAudio<br/>output-device property listeners"]
-        TAP["🎚️ Core Audio process tap → FFT<br/>per-band equalizer levels"]
-        BT["🎧 IOBluetooth + IOHIDManager<br/>connect events + BLE HID"]
-        PWR["🔋 IOKit power source<br/>battery %, charge state, charge limit"]
-        BRT["☀️ CGEvent tap + DisplayServices*<br/>brightness key presses &amp; level"]
-    end
-
-    Signals --> SM["🧠 State machine<br/>idle · compact · expanded<br/>+ transient HUDs"]
-    SM --> PANEL["🪟 Non-activating NSPanel<br/>pinned over the hardware notch"]
-    PANEL --> UI["✨ SwiftUI + Liquid Glass<br/>glassEffect · GlassEffectContainer · glassEffectID"]
-    UI --> USER(["👀 you, delighted, staring at your notch"])
-```
-
-<sub>*The only two spots without a public API — both **read-only**: the brightness *level* (private `DisplayServices`, the same value Control Center shows) and Bluetooth accessory battery (the accessory power-source list, what `pmset -g accps` prints).*</sub>
-
-### The details that matter
-
-- **🎵 Music** arrives via the `com.apple.Music.playerInfo` distributed notification and is read with AppleScript — Glint **never launches or polls Music behind your back.** The one exception: pressing play when Music isn't running launches it (you asked for it).
-- **🎚️ The equalizer** taps Music's output with a **Core Audio process tap** — the same public API screen recorders use for app audio — and runs a tiny FFT for per-band levels. Capture **starts when the live activity appears and stops the instant playback pauses.** Nothing is stored, nothing is sent anywhere; macOS shows its recording indicator while music plays.
-- **🔊 Volume** comes from CoreAudio property listeners on the default output device — **no polling.**
-- **🫥 Hiding the system overlay:** on macOS 26 the volume/brightness pill is drawn by Control Center (the old OSDUIHelper bezel is gone), so the only clean way to suppress it is to make sure Control Center **never sees the key.** Glint's event tap consumes the key at the HID level and applies the change itself — CoreAudio's virtual main volume (same **1/16 steps**, **¼-steps with ⌥⇧**, mute toggle, optional key-click feedback) and DisplayServices for brightness. Toggle the setting off and every key passes through untouched.
-- **☀️ Brightness key presses** are noticed through a CGEvent tap that passes **every event straight through, untouched** (hence the Accessibility permission — macOS's global event monitors never deliver these keys).
-- **🎨 Accent colors** come from a tiny extractor: artwork is downsampled to **24×24**, bucketed, scored with a saturation bias, and clamped for contrast on dark glass.
-
-<br>
-
-## 💿 Install (DMG)
+## 💿 Installation
 
 > [!IMPORTANT]
-> The DMG app is a **universal binary** (Apple Silicon + Intel) but is **not notarized** — that needs a paid Apple Developer account — so macOS blocks the *very first* open on any Mac that downloaded it. Unblocking is a **one-time, four-step dance** (also shipped as `HOW TO INSTALL.txt` inside the DMG).
+> The DMG is a **universal binary** (Apple Silicon + Intel) but is **not notarized** — that needs a paid Apple Developer account — so macOS blocks the *very first* open. Unblocking is a one‑time, four‑step step (also shipped as `HOW TO INSTALL.txt` inside the DMG). Building from source skips it entirely.
 
-1. **Download** `Glint-<version>.dmg` from the [releases page](../../releases), open it, and drag **Glint** onto **Applications**.
-2. **Open** Glint from Applications. macOS will refuse *("cannot be opened" / "could not verify it is free of malware")*. Click **Done** — ***not*** "Move to Trash".
-3. Within an hour, open **System Settings → Privacy &amp; Security**, scroll to the bottom, and click **"Open Anyway"** next to the Glint message, then confirm.
-4. **Open Glint again** — it launches normally from now on. Grant the four permissions it asks for (see [below](#-first-launch--permissions)).
+1. **Download** `Glint-1.0.dmg` from the [releases page](../../releases), open it, and drag **Glint** onto **Applications**.
+2. **Open** Glint from Applications. macOS refuses *("cannot be opened" / "could not verify it is free of malware")*. Click **Done** — ***not*** "Move to Trash".
+3. Open **System Settings → Privacy &amp; Security**, scroll to the bottom, and click **"Open Anyway"** next to the Glint message, then confirm.
+4. **Open Glint again** — it launches normally from now on. Grant the four permissions it asks for (see [Requirements](#-requirements)).
 
 <details>
 <summary><b>⚡ Terminal shortcut for steps 2–3</b></summary>
@@ -200,127 +104,73 @@ flowchart TD
 ```sh
 xattr -dr com.apple.quarantine /Applications/Glint.app
 ```
-
-Building from source skips all of this entirely.
 </details>
 
-<br>
+<details>
+<summary><b>🛠 Build from source</b> (skips Gatekeeper entirely)</summary>
 
-## 🛠 Build &amp; Run
-
-**Requirements:** macOS 26 (Tahoe)+, the Apple Music app, Xcode 26, and [XcodeGen](https://github.com/yonaskolb/XcodeGen). A MacBook with a notch is recommended — on other Macs, Glint draws a **Dynamic Island-style pseudo-notch** at the top of the main display.
+Requires macOS 26, Xcode 26, and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```sh
 brew install xcodegen
-
-git clone <your-repo-url>
-cd iNotchv3
-
+git clone https://github.com/Roots26Hz/iNotch.git
+cd iNotch
 xcodegen generate
 open Glint.xcodeproj   # then ⌘R
 ```
 
-<details>
-<summary><b>Command-line build</b></summary>
-
-```sh
-xcodebuild -project Glint.xcodeproj -scheme Glint -configuration Debug build
-```
+Package a signed release DMG (needs `create-dmg`): `scripts/package-dmg.sh`.
+The app icon and DMG artwork are **generated code** — `swift scripts/generate-icon.swift` and `swift scripts/generate-dmg-background.swift` re‑render them from `docs/GLINTLOGOANDARTWORK.png`.
 </details>
 
-<details>
-<summary><b>Packaging a release &amp; regenerating the icon</b></summary>
-
-`scripts/package-dmg.sh` builds a Release app and wraps it in a drag-to-install DMG at `dist/Glint-<version>.dmg` (needs `brew install xcodegen create-dmg`).
-
-The app icon is **generated code** — `swift scripts/generate-icon.swift` re-renders every size in the asset catalog plus `docs/icon.png`.
-</details>
-
-<br>
-
-## 🔐 First launch &amp; permissions
-
-On first launch, macOS asks for four permissions. Every one is **read-only or purely local** — Glint collects nothing and phones home never.
-
-| Permission | Why Glint needs it | Re-enable under |
-| --- | --- | --- |
-| 🎵 **Automation (Music)** | Play/pause/skip via AppleScript — the *only* automation it performs. Asked on first use of a playback control. | Privacy &amp; Security → Automation |
-| 🎧 **Bluetooth** | Observe device connections for the notch banners. Nothing else. | Privacy &amp; Security → Bluetooth |
-| ♿️ **Accessibility** | Notice **manual** brightness key presses (so the HUD skips auto-brightness) and, when overlay-hiding is on, handle the volume/brightness keys in Control Center's place. **Relaunch after granting.** | Privacy &amp; Security → Accessibility |
-| 🎙 **System Audio Recording** | Feed the equalizer FFT with Music's output. Nothing is stored or sent; the menu-bar recording indicator shows while music plays. **Denied → silently falls back to the animated visualizer.** | Privacy &amp; Security → Screen &amp; System Audio Recording |
-
-<br>
+---
 
 ## 🎮 Usage
 
 - **🖱 Hover the notch** to expand the player; move away to collapse. Hover delay is adjustable.
-- **🔊 Volume / brightness keys** show the matching HUD for ~1.5 s. The system bezel is hidden by default (toggle to bring it back). Brightness HUD reacts to key presses only, never auto-brightness.
+- **🔊 Volume / brightness keys** show the matching HUD in the notch. The system pill stays hidden by default (one toggle brings it back). Brightness reacts to key presses only.
 - **🎧 Connect a Bluetooth device** — name, icon, and battery level pop from the notch for a few seconds.
-- **⏸ Pause playback** — the activity lingers with frozen bars for two minutes (slider: **15 s – 5 min**), then goes idle. Resuming, stopping, or quitting Music ends the linger early.
-- **📋 Menu bar icon** (the notch-and-equalizer glyph) → *Settings…* configures **everything**: live activity, soundwave style (live equalizer vs animated), hover delay, paused-player linger, both HUDs, overlay hiding, Bluetooth banners, battery notifications, low-battery threshold, and notification duration.
-- While Settings is open, Glint shows in the dock; clicking that icon brings Settings to the front.
-
-<br>
-
-## 🧩 Limitations
-
-Honest ones, no asterisks:
-
-- **Apple Music only** — Spotify &amp; friends don't emit the notification Glint listens for (*yet*).
-- **Overlay hiding needs Accessibility** — without it, the macOS overlay just appears as normal. Keys Glint can't act on (brightness with no controllable built-in display; volume on devices without a volume control) automatically fall through to macOS.
-- **Bluetooth banners** cover classic BT (headphones, AirPods) plus BLE keyboards/mice (as HID). BLE-only non-input accessories (some heart-rate straps, game controllers) may not trigger a banner; battery % depends on the device reporting it — otherwise it shows "Connected".
-- **Equalizer** needs System Audio Recording and shows the recording indicator while playing. Switch output devices mid-song and the bars freeze? A quick pause/play restarts capture.
-- **Brightness HUD** tracks the built-in display only.
-- **One display at a time** — the notch UI lives on the built-in (or main) display.
-
-<br>
-
-## ❓ FAQ
-
-<details>
-<summary><b>Is this spying on my music / audio / anything?</b></summary>
-
-No. The equalizer runs a local FFT on Music's output purely to draw bars — **nothing is stored, nothing is sent anywhere**, and macOS shows its recording indicator the whole time so you can see exactly when it's active. There's no telemetry, no analytics, no network calls at all.
-</details>
-
-<details>
-<summary><b>Why does it need Accessibility just for brightness?</b></summary>
-
-macOS's global event monitors **don't deliver brightness/volume media keys** — the only way to notice them is a CGEvent tap, which requires Accessibility. Glint's tap passes every event straight through untouched unless you've enabled overlay-hiding, in which case it consumes the key and applies the change itself.
-</details>
-
-<details>
-<summary><b>I don't have a notch. Can I still use it?</b></summary>
-
-Yes — on Macs without a hardware notch, Glint draws a **Dynamic Island-style pseudo-notch** at the top of your main display.
-</details>
-
-<details>
-<summary><b>"Cannot be opened / could not verify it is free of malware" — is it broken?</b></summary>
-
-Nope, that's just Gatekeeper being cautious about an unnotarized app (notarization needs a paid Apple Developer account). Follow the [four-step install dance](#-install-dmg) or run `xattr -dr com.apple.quarantine /Applications/Glint.app`. Building from source avoids it completely.
-</details>
-
-<details>
-<summary><b>Will you support Spotify?</b></summary>
-
-It's the most-wanted thing on the list — the blocker is that Spotify doesn't emit the same distributed notification Apple Music does. Not impossible, just not here *yet*.
-</details>
-
-<br>
-
-## 🧪 Built with
-
-`SwiftUI` · `Liquid Glass (glassEffect / GlassEffectContainer / glassEffectID)` · `AppKit (NSPanel)` · `Core Audio (process tap + property listeners + FFT)` · `IOBluetooth` · `IOHIDManager` · `IOKit power sources` · `CGEvent taps` · `DisplayServices` · `AppleScript` · `XcodeGen`
-
-<br>
+- **🔋 Plug / unplug the charger** — a banner shows charge state; low‑battery, fully‑charged, and charge‑limit banners fire automatically.
+- **📋 Menu‑bar icon** (the *gl* monogram) → a control panel with every toggle and slider, plus **More Settings…** for the full window and Visualizer Studio.
 
 ---
 
+## 🛠 Requirements
+
+- **macOS 26 (Tahoe)** or later
+- The **Apple Music** app (Glint is Apple Music–only for now)
+- A MacBook with a **notch** — on other Macs, Glint draws a Dynamic Island‑style pseudo‑notch on the main display
+
+On first launch macOS asks for four permissions. Every one is **read‑only or purely local** — Glint collects nothing.
+
+| Permission | Why |
+| --- | --- |
+| 🎵 **Automation (Music)** | Play / pause / skip via AppleScript — the only automation it performs. |
+| 🎧 **Bluetooth** | Observe device connections for the notch banners. |
+| ♿️ **Accessibility** | Notice manual brightness/volume keys and hide the system pill. *Relaunch after granting.* |
+| 🎙 **System Audio Recording** | Feed the equalizer FFT. Denied → silently falls back to the animated visualizer. |
+
+---
+
+## 🧪 Technologies Used
+
+`SwiftUI` · `Liquid Glass (glassEffect / GlassEffectContainer / glassEffectID)` · `AppKit (NSPanel)` · `Core Audio (process tap + property listeners + FFT)` · `IOBluetooth` · `IOHIDManager` · `IOKit power sources` · `CGEvent taps` · `DisplayServices` · `AppleScript` · `XcodeGen`
+
+---
+
+## 🗺 Roadmap
+
+- Spotify &amp; system‑wide media support (blocked on the distributed notification Apple Music emits)
+- Launch at login
+- Notarized distribution (needs a paid Developer ID)
+- More Visualizer Studio presets
+
+---
+
+## 📄 License
+
+Released under the MIT License. Not affiliated with Apple.
+
 <div align="center">
-
-**Glint** — because the notch was always meant to *do* something.
-
-<sub>Made for the hole in your display. 🖤</sub>
-
+<sub><b>Glint</b> — because the notch was always meant to <b>do something</b>. 🖤</sub>
 </div>

@@ -66,7 +66,7 @@ export function HeroSection() {
           className="flex flex-col sm:flex-row items-center gap-4"
         >
           <Link
-            href="#download"
+            href="https://github.com/Roots26Hz/Glint/releases/download/Glint/Glint-1.0.dmg"
             className="group relative flex items-center gap-2 bg-white text-black px-8 py-4 rounded-full font-semibold text-lg hover:scale-105 transition-all duration-300"
           >
             <Download className="w-5 h-5" />
@@ -75,7 +75,7 @@ export function HeroSection() {
           </Link>
           
           <Link
-            href="https://github.com"
+            href="https://github.com/Roots26Hz/Glint"
             target="_blank"
             rel="noopener noreferrer"
             className="group flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-lg text-white/80 hover:text-white hover:bg-white/5 transition-all duration-300"

@@ -99,9 +99,11 @@ final class NotchViewModel: ObservableObject {
             // Drop-down card: artwork + track info hanging below the notch.
             return CGSize(width: max(notchSize.width + 150, 430), height: notchSize.height + 58)
         case .greeting:
-            // Drop-down card for the launch handwriting moment (roomy: the
-            // glowing tube stroke needs bleed space).
-            return CGSize(width: max(notchSize.width + 180, 440), height: notchSize.height + 76)
+            // Drop-down card for the launch handwriting moment. Tall enough
+            // that the script's ascenders and — crucially — the cursive "g"
+            // descender clear the notch's rounded bottom instead of being
+            // clipped, plus bleed room for the glow.
+            return CGSize(width: max(notchSize.width + 180, 440), height: notchSize.height + 150)
         case .batteryAlert, .volumeHUD, .brightnessHUD, .bluetoothConnected:
             return CGSize(width: notchSize.width + 230, height: notchSize.height)
         }

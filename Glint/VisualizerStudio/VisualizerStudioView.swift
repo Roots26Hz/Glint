@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct VisualizerStudioView: View {
-    @State private var settings = VisualizerSettings.load()
+    @ObservedObject private var manager = VisualizerSettingsManager.shared
     @StateObject private var dummyAnalyzer = AudioSpectrumAnalyzer()
     
     private let previewPalette = ColorPalette(
@@ -29,7 +29,7 @@ struct VisualizerStudioView: View {
                                 isPlaying: true,
                                 palette: previewPalette,
                                 analyzer: dummyAnalyzer,
-                                customSettings: settings
+                                customSettings: manager.settings
                             )
                             .padding(.horizontal, 20)
                         }
@@ -45,10 +45,10 @@ struct VisualizerStudioView: View {
             HStack(spacing: 0) {
                 // Style Selector Sidebar
                 List(selection: Binding(
-                    get: { settings.style },
+                    get: { manager.settings.style },
                     set: { newStyle in
                         if let newStyle = newStyle {
-                            settings.style = newStyle
+                            manager.settings.style = newStyle
                             save()
                         }
                     }
@@ -74,41 +74,41 @@ struct VisualizerStudioView: View {
                 ScrollView {
                     Form {
                         Section("Core Tuning") {
-                            Picker("Bar Count", selection: $settings.barCount) {
+                            Picker("Bar Count", selection: $manager.settings.barCount) {
                                 Text("16 Bars").tag(16)
                                 Text("8 Bars").tag(8)
                             }
                             .pickerStyle(.segmented)
-                            .onChange(of: settings.barCount) { _ in save() }
+                            .onChange(of: manager.settings.barCount) { _ in save() }
                             
-                            slider(title: "Animation Speed", value: $settings.animationSpeed)
-                            slider(title: "Wave Height", value: $settings.waveHeight)
-                            slider(title: "Glow Strength", value: $settings.glowStrength)
-                            slider(title: "Thickness", value: $settings.thickness)
-                            slider(title: "Sensitivity", value: $settings.sensitivity)
+                            slider(title: "Animation Speed", value: $manager.settings.animationSpeed)
+                            slider(title: "Wave Height", value: $manager.settings.waveHeight)
+                            slider(title: "Glow Strength", value: $manager.settings.glowStrength)
+                            slider(title: "Thickness", value: $manager.settings.thickness)
+                            slider(title: "Sensitivity", value: $manager.settings.sensitivity)
                         }
                         
                         Section("Appearance") {
-                            slider(title: "Opacity", value: $settings.opacity)
-                            slider(title: "Corner Radius", value: $settings.cornerRadius)
-                            slider(title: "Smoothness", value: $settings.smoothness)
+                            slider(title: "Opacity", value: $manager.settings.opacity)
+                            slider(title: "Corner Radius", value: $manager.settings.cornerRadius)
+                            slider(title: "Smoothness", value: $manager.settings.smoothness)
                         }
                         
                         Section("Advanced Effects") {
-                            slider(title: "Beat Pulse", value: $settings.beatPulseStrength)
-                            slider(title: "Reflection", value: $settings.reflectionIntensity)
+                            slider(title: "Beat Pulse", value: $manager.settings.beatPulseStrength)
+                            slider(title: "Reflection", value: $manager.settings.reflectionIntensity)
                             
-                            Stepper("Layer Count: \(settings.layerCount)", value: $settings.layerCount, in: 1...10)
-                                .onChange(of: settings.layerCount) { _ in save() }
+                            Stepper("Layer Count: \(manager.settings.layerCount)", value: $manager.settings.layerCount, in: 1...10)
+                                .onChange(of: manager.settings.layerCount) { _ in save() }
                             
-                            Toggle("Mirror Left/Right", isOn: $settings.mirrorLeftRight)
-                                .onChange(of: settings.mirrorLeftRight) { _ in save() }
+                            Toggle("Mirror Left/Right", isOn: $manager.settings.mirrorLeftRight)
+                                .onChange(of: manager.settings.mirrorLeftRight) { _ in save() }
                             
-                            Toggle("Center Out Animation", isOn: $settings.centerOutAnimation)
-                                .onChange(of: settings.centerOutAnimation) { _ in save() }
+                            Toggle("Center Out Animation", isOn: $manager.settings.centerOutAnimation)
+                                .onChange(of: manager.settings.centerOutAnimation) { _ in save() }
                                 
-                            Toggle("Idle Animation", isOn: $settings.idleAnimation)
-                                .onChange(of: settings.idleAnimation) { _ in save() }
+                            Toggle("Idle Animation", isOn: $manager.settings.idleAnimation)
+                                .onChange(of: manager.settings.idleAnimation) { _ in save() }
                         }
                     }
                     .padding()
@@ -128,6 +128,6 @@ struct VisualizerStudioView: View {
     }
     
     private func save() {
-        settings.save()
+        manager.save()
     }
 }

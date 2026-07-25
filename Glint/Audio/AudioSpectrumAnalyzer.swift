@@ -43,11 +43,14 @@ final class AudioSpectrumAnalyzer: ObservableObject {
     private let dspQueue = DispatchQueue(label: "com.rutav.Glint.spectrum", qos: .userInteractive)
     /// Distinguishes silence-because-denied from a stop that already happened.
     private var session = 0
+    private var startRetryWorkItem: DispatchWorkItem?
 
     private static let musicBundleID = "com.apple.Music"
 
-    func start() {
+    func start(retryCount: Int = 0) {
         guard ioProcID == nil else { return }
+        
+        startRetryWorkItem?.cancel()
         
         // Ensure the system prompts the user for Screen/Audio Recording permission,
         // which is required for CoreAudio process taps.
@@ -57,7 +60,16 @@ final class AudioSpectrumAnalyzer: ObservableObject {
             let pid = NSRunningApplication.runningApplications(withBundleIdentifier: Self.musicBundleID)
                 .first?.processIdentifier,
             let processObject = Self.translate(pid: pid)
-        else { return }
+        else {
+            if retryCount < 5 {
+                let workItem = DispatchWorkItem { [weak self] in
+                    self?.start(retryCount: retryCount + 1)
+                }
+                self.startRetryWorkItem = workItem
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: workItem)
+            }
+            return
+        }
 
         let tapDescription = CATapDescription(stereoMixdownOfProcesses: [processObject])
         tapDescription.name = "Glint Equalizer Tap"
@@ -118,6 +130,7 @@ final class AudioSpectrumAnalyzer: ObservableObject {
     }
 
     func stop() {
+        startRetryWorkItem?.cancel()
         teardown()
         isCapturing = false
         data = .empty

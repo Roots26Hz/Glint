@@ -81,7 +81,7 @@ export function Navbar() {
         {/* CTAs */}
         <div className="hidden md:flex items-center gap-3">
           <Link
-            href="https://github.com"
+            href="https://github.com/Roots26Hz/Glint"
             target="_blank"
             rel="noopener noreferrer"
             className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
@@ -90,7 +90,7 @@ export function Navbar() {
           </Link>
           
           <Link
-            href="https://buymeacoffee.com"
+            href="https://onlychai.neocities.org/support?name=Glint&upi=rutavdesai461%40okhdfcbank"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 bg-[#FFDD00] text-black px-5 py-2 rounded-full text-sm font-medium hover:scale-105 hover:bg-[#FFDD00]/90 transition-all duration-300"
@@ -100,7 +100,7 @@ export function Navbar() {
           </Link>
           
           <Link
-            href="#download"
+            href="https://github.com/Roots26Hz/Glint/releases/download/Glint/Glint-1.0.dmg"
             className="flex items-center gap-2 bg-white text-black px-5 py-2 rounded-full text-sm font-medium hover:scale-105 hover:bg-white/90 transition-all duration-300"
           >
             <Download className="w-4 h-4" />
@@ -132,7 +132,7 @@ export function Navbar() {
           ))}
           <div className="h-px bg-white/10 my-2" />
           <Link
-            href="https://github.com"
+            href="https://github.com/Roots26Hz/Glint"
             target="_blank"
             className="flex items-center gap-3 px-4 py-3 text-lg font-medium hover:bg-white/5 rounded-xl transition-colors"
           >
@@ -140,7 +140,7 @@ export function Navbar() {
             GitHub
           </Link>
           <Link
-            href="https://buymeacoffee.com"
+            href="https://onlychai.neocities.org/support?name=Glint&upi=rutavdesai461%40okhdfcbank"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setMobileMenuOpen(false)}
@@ -150,7 +150,7 @@ export function Navbar() {
             Buy Us a Coffee
           </Link>
           <Link
-            href="#download"
+            href="https://github.com/Roots26Hz/Glint/releases/download/Glint/Glint-1.0.dmg"
             onClick={() => setMobileMenuOpen(false)}
             className="flex justify-center items-center gap-2 bg-white text-black px-4 py-3 mt-2 rounded-xl text-lg font-medium hover:bg-white/90 transition-colors"
           >

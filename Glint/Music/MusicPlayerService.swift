@@ -17,12 +17,16 @@ final class MusicPlayerService: ObservableObject {
     @Published private(set) var isPlaying = false {
         didSet {
             if isPlaying != oldValue {
-                if isPlaying {
-                    spectrumAnalyzer.start()
-                } else {
-                    spectrumAnalyzer.stop()
-                }
+                updateSpectrumAnalyzerState()
             }
+        }
+    }
+    
+    private func updateSpectrumAnalyzerState() {
+        if isPlaying && Preferences.musicWaveStyle == Preferences.musicWaveStyleEqualizer {
+            spectrumAnalyzer.start()
+        } else {
+            spectrumAnalyzer.stop()
         }
     }
     @Published private(set) var title = ""
@@ -56,6 +60,7 @@ final class MusicPlayerService: ObservableObject {
     private var positionTimer: Timer?
     private var artworkKey = ""
     private var artworkKeyInFlight: String?
+    private var artworkRetryWorkItem: DispatchWorkItem?
 
     private static let musicBundleID = "com.apple.Music"
     /// Unit separator — safe delimiter for AppleScript string results.
@@ -68,6 +73,11 @@ final class MusicPlayerService: ObservableObject {
             name: NSNotification.Name("com.apple.Music.playerInfo"),
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            forName: UserDefaults.didChangeNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            self?.updateSpectrumAnalyzerState()
+        }
         if isMusicRunning {
             refreshFullState()
         }
@@ -175,13 +185,12 @@ final class MusicPlayerService: ObservableObject {
         }
     }
 
-    private func refreshArtworkIfNeeded() {
-        let key = "\(title)|\(artist)|\(album)"
-        guard key != artworkKey, key != artworkKeyInFlight, isMusicRunning else { return }
-        // Only a successful query commits the key — an error or AppleEvent
-        // timeout leaves it unset so the next state change retries instead of
-        // leaving the track artless (and the UI untinted) until it changes.
-        artworkKeyInFlight = key
+    private func refreshArtworkIfNeeded(retryCount: Int = 0) {
+        let currentKey = "\(title)|\(artist)|\(album)"
+        guard currentKey != artworkKey, isMusicRunning else { return }
+        
+        if artworkKeyInFlight == currentKey { return }
+        artworkKeyInFlight = currentKey
 
         let script = """
         tell application "Music"
@@ -195,20 +204,38 @@ final class MusicPlayerService: ObservableObject {
         """
         runScript(script) { [weak self] descriptor in
             guard let self else { return }
-            if self.artworkKeyInFlight == key {
+            
+            let latestKey = "\(self.title)|\(self.artist)|\(self.album)"
+            guard currentKey == latestKey else { return }
+            
+            if self.artworkKeyInFlight == currentKey {
                 self.artworkKeyInFlight = nil
             }
-            guard let descriptor else { return }
-            let data = descriptor.data
+            
+            let data = descriptor?.data ?? Data()
             let image = data.isEmpty ? nil : NSImage(data: data)
-            // Streaming tracks often report no artwork until Music caches
-            // them, so an empty result stays uncommitted and the next player
-            // event retries; only real artwork settles the key.
-            if image != nil {
-                self.artworkKey = key
+            
+            if let image = image {
+                self.artworkKey = currentKey
+                self.artwork = image
+                self.updateArtworkColor(from: image)
+            } else {
+                if self.artwork != nil {
+                    self.artwork = nil
+                    self.updateArtworkColor(from: nil)
+                }
+                
+                if retryCount < 5 {
+                    self.artworkRetryWorkItem?.cancel()
+                    let workItem = DispatchWorkItem { [weak self] in
+                        self?.refreshArtworkIfNeeded(retryCount: retryCount + 1)
+                    }
+                    self.artworkRetryWorkItem = workItem
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: workItem)
+                } else {
+                    self.artworkKey = currentKey
+                }
             }
-            self.artwork = image
-            self.updateArtworkColor(from: image)
         }
     }
 

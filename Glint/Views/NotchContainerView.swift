@@ -73,8 +73,12 @@ struct NotchContainerView: View {
     /// Both layers are always present so idle ↔ active is a smooth dissolve
     /// of the black cover rather than a view replacement.
     private func background(in shape: NotchShape) -> some View {
-        Color.clear
-            .glassEffect(.regular.tint(.black.opacity(0.35)), in: shape)
+        // The greeting is meant to feel like the wordmark floating inside the
+        // notch's own glass, not printed on a dark card — so it gets a much
+        // lighter tint and reads as translucent frosted glass.
+        let tintOpacity = viewModel.mode == .greeting ? 0.12 : 0.35
+        return Color.clear
+            .glassEffect(.regular.tint(.black.opacity(tintOpacity)), in: shape)
             .overlay {
                 if viewModel.mode == .expandedMusic || viewModel.mode == .nowPlayingNotification {
                     ZStack {
@@ -157,7 +161,10 @@ struct NotchContainerView: View {
 
         case .greeting:
             GreetingView(notchSize: viewModel.notchSize)
-                .transition(.blurReplace)
+                // Unfold straight down out of the notch — a vertical-only
+                // scale anchored at the top edge, so there is zero horizontal
+                // motion (no side slide), just a drop from the top-center.
+                .transition(.dropFromNotch)
         }
     }
     
@@ -165,6 +172,28 @@ struct NotchContainerView: View {
         .asymmetric(
             insertion: .scale(scale: 0.96).combined(with: .opacity).animation(.spring(response: 0.4, dampingFraction: 0.7)),
             removal: .move(edge: .top).combined(with: .opacity).animation(.easeIn(duration: 0.2))
+        )
+    }
+}
+
+/// A pure top-anchored vertical unfold: the view scales only on the Y axis
+/// (height 0 → full) from its top edge while fading in, so it appears to drop
+/// straight down out of the notch with no horizontal movement whatsoever.
+private struct DropUnfoldModifier: ViewModifier {
+    /// 0 = collapsed at the notch, 1 = fully dropped.
+    var progress: CGFloat
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(x: 1, y: progress, anchor: .top)
+            .opacity(progress)
+    }
+}
+
+extension AnyTransition {
+    static var dropFromNotch: AnyTransition {
+        .modifier(
+            active: DropUnfoldModifier(progress: 0),
+            identity: DropUnfoldModifier(progress: 1)
         )
     }
 }

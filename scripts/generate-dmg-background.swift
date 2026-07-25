@@ -54,15 +54,6 @@ glow(NSPoint(x: 130, y: 340), 260, rgba(0x5FD6FF, 0.16))
 glow(NSPoint(x: 560, y: 300), 240, rgba(0x9D8BFF, 0.15))
 glow(NSPoint(x: 330, y: 40), 220, rgba(0xE0AC58, 0.07))
 
-// ---- Notch silhouette hanging from the top edge ----
-let notchW: CGFloat = 150
-let notch = NSBezierPath(
-    roundedRect: NSRect(x: (W - notchW) / 2, y: H - 26, width: notchW, height: 26 + 12),
-    xRadius: 11, yRadius: 11
-)
-NSColor.black.withAlphaComponent(0.85).setFill()
-notch.fill()
-
 // ---- "Glint." wordmark: real typeface (SnellRoundhand Black) with the
 // hello gradient and a graduated glow, built from glyph outlines ----
 import CoreText
@@ -85,21 +76,20 @@ func glyphPath(_ string: String, font: NSFont) -> CGPath {
     return path
 }
 
-let markFont = NSFont(name: "SnellRoundhand-Black", size: 58)!
-let rawMark = glyphPath("Glint.", font: markFont)
+let markFont = NSFont(name: "SnellRoundhand-Black", size: 50)!
+let rawMark = glyphPath("glint", font: markFont)
 let markBounds = rawMark.boundingBoxOfPath
 var center = CGAffineTransform(
     translationX: (W - markBounds.width) / 2 - markBounds.minX,
-    y: H - 120 - markBounds.minY
+    y: H - 182 - markBounds.minY
 )
 let markCG = rawMark.copy(using: &center)!
 let markRect = markCG.boundingBoxOfPath
 let helloColors: [NSColor] = [
-    rgba(0x529EFF), rgba(0x7A70FF), rgba(0xA861F5), rgba(0xE066CC), rgba(0xFF945C),
+    rgba(0x3BF5A6), rgba(0x4FD8FF), rgba(0x8B5CFF),
 ]
 let helloGradient = NSGradient(
-    colorsAndLocations: (helloColors[0], 0.0), (helloColors[1], 0.28),
-    (helloColors[2], 0.50), (helloColors[3], 0.72), (helloColors[4], 0.95)
+    colorsAndLocations: (helloColors[0], 0.0), (helloColors[1], 0.5), (helloColors[2], 1.0)
 )!
 let cg = NSGraphicsContext.current!.cgContext
 /// Fills the glyphs (grown by `spread`) with the gradient at `alpha` —
@@ -125,6 +115,13 @@ helloPass(spread: 4, alpha: 0.14)
 helloPass(spread: 2, alpha: 0.22)
 helloPass(spread: 0, alpha: 1.0)
 
+// ---- the app icon itself, floating above the wordmark ----
+if let iconImg = NSImage(contentsOf: repoRoot.appendingPathComponent(
+    "Glint/Resources/Assets.xcassets/AppIcon.appiconset/icon_256.png")) {
+    iconImg.draw(in: NSRect(x: (W - 84) / 2, y: H - 124, width: 84, height: 84),
+                 from: .zero, operation: .sourceOver, fraction: 1.0)
+}
+
 // ---- Tagline ----
 func drawCentered(_ text: String, y: CGFloat, size: CGFloat, weight: NSFont.Weight, color: NSColor, kern: CGFloat = 0) {
     let attrs: [NSAttributedString.Key: Any] = [
@@ -136,8 +133,7 @@ func drawCentered(_ text: String, y: CGFloat, size: CGFloat, weight: NSFont.Weig
     let sz = str.size()
     str.draw(at: NSPoint(x: (W - sz.width) / 2, y: y))
 }
-drawCentered("THE NOTCH, FINALLY EARNING ITS KEEP", y: H - 172, size: 9, weight: .semibold,
-             color: rgba(0x5FD6FF, 0.75), kern: 2.6)
+
 
 // ---- Drag arrow between icon slots (icons sit at x 165 / 495, y 220 from top) ----
 // In AppKit coords the icon row centers at y = H - 220 = 200.

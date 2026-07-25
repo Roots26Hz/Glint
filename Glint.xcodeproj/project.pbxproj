@@ -42,6 +42,7 @@
 		E30C4E870A91DE6A8CBDF10F /* CenterEqualizerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45420DA974AFFB691A2ED360 /* CenterEqualizerRenderer.swift */; };
 		ECBB34178DC54F8555B039B8 /* ArtworkColorExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 873BA54F54165E212EDBACFC /* ArtworkColorExtractor.swift */; };
 		EF6A9492BE373177CFF0576E /* VolumeHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A2707A780413CF4448CA170 /* VolumeHUDView.swift */; };
+		F65F3A416442EB3820577C36 /* VisualizerSettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE5FBAACB91553617954C81D /* VisualizerSettingsManager.swift */; };
 		F8C6D9E93A9284726F3CC29C /* EnergyRingRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFA56EA877D6E5C1C2FD4A4 /* EnergyRingRenderer.swift */; };
 /* End PBXBuildFile section */
 
@@ -82,6 +83,7 @@
 		C2C230004F396BF864AA32CE /* VisualizerStudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualizerStudioView.swift; sourceTree = "<group>"; };
 		D8631486A5B0970AAFB47E0A /* NotchContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchContainerView.swift; sourceTree = "<group>"; };
 		DA9DB4156292708BF23D0DA5 /* NotchShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchShape.swift; sourceTree = "<group>"; };
+		DE5FBAACB91553617954C81D /* VisualizerSettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualizerSettingsManager.swift; sourceTree = "<group>"; };
 		E5E12D04DAB5C8F4EAB5C1B1 /* BrightnessMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrightnessMonitor.swift; sourceTree = "<group>"; };
 		F32CA9FD52B5584B8AD7E79B /* AudioSpectrumAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSpectrumAnalyzer.swift; sourceTree = "<group>"; };
 		F5A69ACF962AEDE189F98649 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -125,6 +127,7 @@
 			children = (
 				B2481DF0A0B18EC45EB0A973 /* VisualizerModels.swift */,
 				4CA860F6633D9A21ED34902E /* VisualizerRenderer.swift */,
+				DE5FBAACB91553617954C81D /* VisualizerSettingsManager.swift */,
 				C2C230004F396BF864AA32CE /* VisualizerStudioView.swift */,
 				03056706DEE0B10DB85CB8A2 /* Renderers */,
 			);
@@ -348,6 +351,7 @@
 				1DDC54CFD52CCF0E6B59B75C /* SpectrumRenderer.swift in Sources */,
 				0D0C6509026CD9851FFBED81 /* VisualizerModels.swift in Sources */,
 				80A24DC6A7E900BB39541760 /* VisualizerRenderer.swift in Sources */,
+				F65F3A416442EB3820577C36 /* VisualizerSettingsManager.swift in Sources */,
 				43A64F40E60DB49D63F3259D /* VisualizerStudioView.swift in Sources */,
 				EF6A9492BE373177CFF0576E /* VolumeHUDView.swift in Sources */,
 				594FC815A79B9B781FC50225 /* VolumeMonitor.swift in Sources */,

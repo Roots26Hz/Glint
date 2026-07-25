@@ -5,13 +5,13 @@ struct PremiumVisualizerView: View {
     var palette: ColorPalette
     @ObservedObject var analyzer: AudioSpectrumAnalyzer
     
-    // We can inject settings or read from AppStorage/UserDefaults
     // For live preview, we want to allow passing in settings.
     var customSettings: VisualizerSettings? = nil
-    @State private var defaultSettings = VisualizerSettings.load()
+    
+    @ObservedObject private var manager = VisualizerSettingsManager.shared
     
     private var activeSettings: VisualizerSettings {
-        customSettings ?? defaultSettings
+        customSettings ?? manager.settings
     }
     
     var body: some View {
@@ -44,11 +44,6 @@ struct PremiumVisualizerView: View {
             .animation(.easeInOut(duration: 0.5), value: activeSettings.style)
         }
         .frame(height: 24, alignment: .center)
-        .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in
-            if customSettings == nil {
-                defaultSettings = VisualizerSettings.load()
-            }
-        }
     }
     
     private func renderer(for style: VisualizerStyle, settings: VisualizerSettings) -> any VisualizerRenderer {
