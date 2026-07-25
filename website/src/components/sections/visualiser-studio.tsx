@@ -162,9 +162,6 @@ export function VisualiserStudio() {
 
   useEffect(() => {
     if (isPlaying) {
-      if (audioContextRef.current?.state === "suspended") {
-        audioContextRef.current.resume();
-      }
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = requestAnimationFrame(drawVisualizer);
     } else {
@@ -180,6 +177,9 @@ export function VisualiserStudio() {
     if (isPlaying) {
       audioRef.current?.pause();
     } else {
+      if (audioContextRef.current?.state === "suspended") {
+        audioContextRef.current.resume();
+      }
       audioRef.current?.play().catch(e => console.error("Audio playback failed", e));
     }
     setIsPlaying(!isPlaying);
@@ -191,7 +191,6 @@ export function VisualiserStudio() {
         ref={audioRef} 
         src="/assets/bouncemusic.mp3" 
         loop 
-        crossOrigin="anonymous"
         onEnded={() => setIsPlaying(false)} 
       />
       
