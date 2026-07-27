@@ -83,13 +83,15 @@ struct ExpandedMusicView: View {
     }
 
     private var artwork: some View {
-        Group {
+        ZStack {
             if let image = music.artwork {
                 Image(nsImage: image)
                     .resizable()
                     .interpolation(.high)
                     .antialiased(true)
                     .aspectRatio(contentMode: .fill)
+                    .id(music.artworkKey)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
             } else {
                 ZStack {
                     LinearGradient(
@@ -100,6 +102,16 @@ struct ExpandedMusicView: View {
                         .font(.system(size: 30, weight: .medium))
                         .foregroundStyle(.white.opacity(0.5))
                 }
+                .id(music.artworkKey)
+                .transition(.opacity)
+            }
+            
+            if music.isArtworkLoading {
+                ProgressView()
+                    .controlSize(.regular)
+                    .padding(8)
+                    .background(Color.black.opacity(0.5))
+                    .clipShape(Circle())
             }
         }
         .frame(width: 92, height: 92)
@@ -107,9 +119,8 @@ struct ExpandedMusicView: View {
         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .glassEffectID("artwork", in: glassSpace)
         .shadow(color: music.isPlaying ? music.palette.glow.opacity(0.6) : .black.opacity(0.4), radius: 8, y: 3)
-        .id(music.title)
-        .transition(.blurReplace)
-        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: music.title)
+        .animation(.easeInOut(duration: 0.4), value: music.artworkKey)
+        .animation(.easeInOut(duration: 0.3), value: music.isArtworkLoading)
         .animation(.spring(response: 0.5, dampingFraction: 0.8), value: music.isPlaying)
     }
 

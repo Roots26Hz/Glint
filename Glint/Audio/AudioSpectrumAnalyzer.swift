@@ -45,9 +45,7 @@ final class AudioSpectrumAnalyzer: ObservableObject {
     private var session = 0
     private var startRetryWorkItem: DispatchWorkItem?
 
-    private static let musicBundleID = "com.apple.Music"
-
-    func start(retryCount: Int = 0) {
+    func start(bundleID: String, retryCount: Int = 0) {
         guard ioProcID == nil else { return }
         
         startRetryWorkItem?.cancel()
@@ -57,13 +55,13 @@ final class AudioSpectrumAnalyzer: ObservableObject {
         _ = CGRequestScreenCaptureAccess()
 
         guard
-            let pid = NSRunningApplication.runningApplications(withBundleIdentifier: Self.musicBundleID)
+            let pid = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
                 .first?.processIdentifier,
             let processObject = Self.translate(pid: pid)
         else {
             if retryCount < 5 {
                 let workItem = DispatchWorkItem { [weak self] in
-                    self?.start(retryCount: retryCount + 1)
+                    self?.start(bundleID: bundleID, retryCount: retryCount + 1)
                 }
                 self.startRetryWorkItem = workItem
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: workItem)

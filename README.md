@@ -37,9 +37,9 @@ It runs entirely from the menu bar, keeps **zero telemetry**, and greets you wit
 
 ## ✨ Features
 
-### 🎵 Apple Music, where your eyes already are
-- **Now Playing live activity** — while Apple Music plays, the notch grows small *ears*: album artwork on the left, a soundwave on the right, tinted to the current cover.
-- **Real‑audio equalizer** — the default soundwave taps Music's output through a Core Audio process tap and runs an FFT, so **bass thumps the left bars and vocals ripple the right ones**. Prefer a procedural look? Flip to the animated visualizer.
+### 🎵 Apple Music & Spotify, where your eyes already are
+- **Now Playing live activity** — while Apple Music or Spotify plays, the notch grows small *ears*: album artwork on the left, a soundwave on the right, tinted to the current cover.
+- **Real‑audio equalizer** — the default soundwave taps the active media player's output through a Core Audio process tap and runs an FFT, so **bass thumps the left bars and vocals ripple the right ones**. Prefer a procedural look? Flip to the animated visualizer.
 - **Hover‑expanded player** — hover the notch and a full Liquid Glass player drops down: artwork, title/artist, a **seekable** progress bar, and shuffle / previous / play / next / repeat. The play button *morphs* into pause, skip glyphs bounce, and active shuffle/repeat glow in the album's color.
 - **Song‑change banner** — change tracks and a compact drop‑down card announces the new song, artwork and all.
 - **Artwork‑adaptive everything** — a built‑in dominant‑color extractor tints the visualizer, progress bar, play‑button glass, and a subtle background wash to match the cover, with legibility clamps so it always reads on glass.
@@ -91,11 +91,13 @@ It runs entirely from the menu bar, keeps **zero telemetry**, and greets you wit
 ## 💿 Installation
 
 > [!IMPORTANT]
-> The DMG is a **universal binary** (Apple Silicon + Intel) but is **not notarized** — that needs a paid Apple Developer account — so macOS blocks the *very first* open. Unblocking is a one‑time, four‑step step (also shipped as `HOW TO INSTALL.txt` inside the DMG). Building from source skips it entirely.
+> **Important Note:** We do not currently have a verified Apple Developer account, so the Glint application will be blocked by macOS on its first launch. To bypass this, you need to open the app by clicking **"Open Anyway"** in **Privacy & Security** under macOS Settings.
+>
+> Please be reassured that all permissions required for Glint are completely local. **Glint does not collect any user data or send any information anywhere.** Building from source skips Gatekeeper entirely.
 
 1. **Download** `Glint-1.0.dmg` from the [releases page](../../releases), open it, and drag **Glint** onto **Applications**.
 2. **Open** Glint from Applications. macOS refuses *("cannot be opened" / "could not verify it is free of malware")*. Click **Done** — ***not*** "Move to Trash".
-3. Open **System Settings → Privacy &amp; Security**, scroll to the bottom, and click **"Open Anyway"** next to the Glint message, then confirm.
+3. Open **System Settings → Privacy & Security**, scroll to the bottom, and click **"Open Anyway"** next to the Glint message, then confirm.
 4. **Open Glint again** — it launches normally from now on. Grant the four permissions it asks for (see [Requirements](#-requirements)).
 
 <details>
@@ -138,14 +140,14 @@ The app icon and DMG artwork are **generated code** — `swift scripts/generate-
 ## 🛠 Requirements
 
 - **macOS 26 (Tahoe)** or later
-- The **Apple Music** app (Glint is Apple Music–only for now)
+- The **Apple Music** or **Spotify** app
 - A MacBook with a **notch** — on other Macs, Glint draws a Dynamic Island‑style pseudo‑notch on the main display
 
 On first launch macOS asks for four permissions. Every one is **read‑only or purely local** — Glint collects nothing.
 
 | Permission | Why |
 | --- | --- |
-| 🎵 **Automation (Music)** | Play / pause / skip via AppleScript — the only automation it performs. |
+| 🎵 **Automation (Music / Spotify)** | Play / pause / skip via AppleScript — the only automation it performs. |
 | 🎧 **Bluetooth** | Observe device connections for the notch banners. |
 | ♿️ **Accessibility** | Notice manual brightness/volume keys and hide the system pill. *Relaunch after granting.* |
 | 🎙 **System Audio Recording** | Feed the equalizer FFT. Denied → silently falls back to the animated visualizer. |
@@ -160,7 +162,6 @@ On first launch macOS asks for four permissions. Every one is **read‑only or p
 
 ## 🗺 Roadmap
 
-- Spotify &amp; system‑wide media support (blocked on the distributed notification Apple Music emits)
 - Launch at login
 - Notarized distribution (needs a paid Developer ID)
 - More Visualizer Studio presets

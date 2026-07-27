@@ -38,6 +38,7 @@
 		CEA0A8FF66046FEFA80FAC0C /* GlintApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CB74659D174004C620D538A /* GlintApp.swift */; };
 		D1037813FA8982C4F5DE59AF /* AppleClassicRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BBCD9373206882C5394743 /* AppleClassicRenderer.swift */; };
 		D80155FA37D321EBE93545D9 /* AccessibilityTrust.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2A643317C8E18322EB9101 /* AccessibilityTrust.swift */; };
+		DBD494F1A4932AAC4FEF2DB2 /* ArtworkCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2921D5AC7DA3E1E16C1128 /* ArtworkCache.swift */; };
 		DFB32FFCCF7B6C59A3132364 /* MusicPlayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A70DE6C17ED12653BB02EEC /* MusicPlayerService.swift */; };
 		E30C4E870A91DE6A8CBDF10F /* CenterEqualizerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45420DA974AFFB691A2ED360 /* CenterEqualizerRenderer.swift */; };
 		ECBB34178DC54F8555B039B8 /* ArtworkColorExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 873BA54F54165E212EDBACFC /* ArtworkColorExtractor.swift */; };
@@ -85,6 +86,7 @@
 		DA9DB4156292708BF23D0DA5 /* NotchShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchShape.swift; sourceTree = "<group>"; };
 		DE5FBAACB91553617954C81D /* VisualizerSettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualizerSettingsManager.swift; sourceTree = "<group>"; };
 		E5E12D04DAB5C8F4EAB5C1B1 /* BrightnessMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrightnessMonitor.swift; sourceTree = "<group>"; };
+		EA2921D5AC7DA3E1E16C1128 /* ArtworkCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkCache.swift; sourceTree = "<group>"; };
 		F32CA9FD52B5584B8AD7E79B /* AudioSpectrumAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSpectrumAnalyzer.swift; sourceTree = "<group>"; };
 		F5A69ACF962AEDE189F98649 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -226,6 +228,7 @@
 		DC478D43C4A7793B4579D227 /* Music */ = {
 			isa = PBXGroup;
 			children = (
+				EA2921D5AC7DA3E1E16C1128 /* ArtworkCache.swift */,
 				873BA54F54165E212EDBACFC /* ArtworkColorExtractor.swift */,
 				8A70DE6C17ED12653BB02EEC /* MusicPlayerService.swift */,
 			);
@@ -322,6 +325,7 @@
 				D80155FA37D321EBE93545D9 /* AccessibilityTrust.swift in Sources */,
 				5C3426B879683E0337B2364E /* AdaptiveRenderer.swift in Sources */,
 				D1037813FA8982C4F5DE59AF /* AppleClassicRenderer.swift in Sources */,
+				DBD494F1A4932AAC4FEF2DB2 /* ArtworkCache.swift in Sources */,
 				ECBB34178DC54F8555B039B8 /* ArtworkColorExtractor.swift in Sources */,
 				30AE0D3A8189AD70FC8A998B /* AudioSpectrumAnalyzer.swift in Sources */,
 				77B8808A57DB9ADF084605FB /* BatteryMonitor.swift in Sources */,
