@@ -168,10 +168,6 @@ On first launch macOS asks for four permissions. Every one is **read‑only or p
 
 ---
 
-## 📄 License
-
-Released under the MIT License. Not affiliated with Apple.
-
 <div align="center">
 <sub><b>Glint</b> — because the notch was always meant to <b>do something</b>. 🖤</sub>
 </div>
