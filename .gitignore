@@ -25,3 +25,6 @@ Glint/VisualizerStudio
 Glint/Music
 Glint.xcodeproj
 
+
+# Release and asset scripts are kept local (see docs/RELEASING.md)
+/scripts/
