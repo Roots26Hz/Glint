@@ -5,12 +5,20 @@ options:
     macOS: "26.0"
   createIntermediateGroups: true
 
+packages:
+  # In-app updates.
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: 2.10.1
+
 targets:
   Glint:
     type: application
     platform: macOS
     sources:
       - Glint
+    dependencies:
+      - package: Sparkle
     info:
       path: Glint/Resources/Info.plist
       properties:
@@ -20,12 +28,25 @@ targets:
         NSBluetoothAlwaysUsageDescription: Glint shows a notch banner when a Bluetooth device connects.
         NSAudioCaptureUsageDescription: Glint analyzes Apple Music's audio to animate the notch equalizer to the song.
         LSApplicationCategoryType: public.app-category.utilities
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        # Sparkle: the feed is the appcast.xml attached to the latest GitHub
+        # Release; every update must be signed with the EdDSA key below.
+        SUFeedURL: https://github.com/Roots26Hz/Glint/releases/latest/download/appcast.xml
+        SUPublicEDKey: "CYhiotVYRjRNxSJ6GQquiMe7+XOmhfPyotWICscdosk="
+        SUEnableAutomaticChecks: true
+        SUScheduledCheckInterval: 86400
+        SUAutomaticallyUpdate: false
     entitlements:
       path: Glint/Resources/Glint.entitlements
       properties:
         com.apple.security.automation.apple-events: true
     settings:
       base:
+        # Bumped by scripts/release.sh. CURRENT_PROJECT_VERSION is the build
+        # number Sparkle compares, so it must increase with every release.
+        MARKETING_VERSION: "1.1"
+        CURRENT_PROJECT_VERSION: "2"
         SWIFT_VERSION: "5.0"
         MACOSX_DEPLOYMENT_TARGET: "26.0"
         PRODUCT_BUNDLE_IDENTIFIER: com.rutav.Glint

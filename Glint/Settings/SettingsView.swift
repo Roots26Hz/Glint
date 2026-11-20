@@ -30,6 +30,7 @@ struct GeneralSettingsView: View {
     @AppStorage(Preferences.bluetoothEnabledKey) private var bluetoothEnabled = true
     @AppStorage(Preferences.musicWaveStyleKey) private var musicWaveStyle = Preferences.musicWaveStyleEqualizer
     @AppStorage(Preferences.musicLingerDurationKey) private var musicLingerDuration = 120.0
+    @ObservedObject private var updates = UpdateController.shared
 
     var body: some View {
         Form {
@@ -122,8 +123,38 @@ struct GeneralSettingsView: View {
             } header: {
                 Label("Battery", systemImage: "battery.100percent")
             }
+
+            Section {
+                LabeledContent("Installed version", value: "\(updates.currentVersion) (\(updates.currentBuild))")
+                LabeledContent("Latest available", value: latestVersionDescription)
+                if let lastCheck = updates.lastCheckDate {
+                    LabeledContent("Last checked") {
+                        Text(lastCheck, format: .relative(presentation: .named))
+                    }
+                }
+                Toggle("Automatically check for updates", isOn: Binding(
+                    get: { updates.automaticallyChecksForUpdates },
+                    set: { updates.automaticallyChecksForUpdates = $0 }
+                ))
+                HStack {
+                    Text("Updates come from Glint's GitHub releases and are verified before installing.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Button("Check for Updates…") { updates.checkForUpdates() }
+                        .disabled(!updates.canCheckForUpdates)
+                }
+            } header: {
+                Label("Updates", systemImage: "arrow.down.circle")
+            }
         }
         .formStyle(.grouped)
+        .onAppear { updates.refreshLatestVersionIfAllowed() }
+    }
+
+    private var latestVersionDescription: String {
+        guard let latest = updates.latestVersion else { return "Not checked yet" }
+        return latest == updates.currentVersion ? "\(latest) (up to date)" : latest
     }
 
     private static func minutesSeconds(_ seconds: Double) -> String {

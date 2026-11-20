@@ -100,7 +100,7 @@ export function Navbar() {
           </Link>
           
           <Link
-            href="https://github.com/Roots26Hz/Glint/releases/download/Glint/Glint-1.0.dmg"
+            href="https://github.com/Roots26Hz/Glint/releases/latest/download/Glint.dmg"
             className="flex items-center gap-2 bg-white text-black px-5 py-2 rounded-full text-sm font-medium hover:scale-105 hover:bg-white/90 transition-all duration-300"
           >
             <Download className="w-4 h-4" />
@@ -150,7 +150,7 @@ export function Navbar() {
             Buy Us a Coffee
           </Link>
           <Link
-            href="https://github.com/Roots26Hz/Glint/releases/download/Glint/Glint-1.0.dmg"
+            href="https://github.com/Roots26Hz/Glint/releases/latest/download/Glint.dmg"
             onClick={() => setMobileMenuOpen(false)}
             className="flex justify-center items-center gap-2 bg-white text-black px-4 py-3 mt-2 rounded-xl text-lg font-medium hover:bg-white/90 transition-colors"
           >

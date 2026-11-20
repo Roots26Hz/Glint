@@ -26,5 +26,6 @@ Glint/Music
 Glint.xcodeproj
 
 
-# Release and asset scripts are kept local (see docs/RELEASING.md)
+# Kept local: release and asset scripts, and the release guide
 /scripts/
+/docs/RELEASING.md

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0077EF98BB4A62F705AA5200 /* PremiumVisualizerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE106ACBFBCBED3D12DDD7 /* PremiumVisualizerView.swift */; };
+		0465987432ED74C19A6C3247 /* UpdateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFAE8C888FFB1CBC1BF720CB /* UpdateController.swift */; };
 		0C4518F08D430A6CE46A6BE1 /* GreetingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4B31C819905A290F5B086A /* GreetingView.swift */; };
 		0D0C6509026CD9851FFBED81 /* VisualizerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2481DF0A0B18EC45EB0A973 /* VisualizerModels.swift */; };
 		11F5F56DAD8C6CF78FD79BA9 /* BrightnessMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E12D04DAB5C8F4EAB5C1B1 /* BrightnessMonitor.swift */; };
@@ -24,6 +25,7 @@
 		5C3426B879683E0337B2364E /* AdaptiveRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B080926DF8245D43C814A0 /* AdaptiveRenderer.swift */; };
 		61B212C9FAE4FF01C83CEA74 /* ExpandedMusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FD2185325C3E24CA752A880 /* ExpandedMusicView.swift */; };
 		63C68625AF3EE0720B446A0D /* CompactMusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB02CC6C0E49EF8581A0D8F /* CompactMusicView.swift */; };
+		6502FE5E6F4F98D85869169F /* CatalogArtworkFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DFB588ABB5C25D8A4C8ECF3 /* CatalogArtworkFetcher.swift */; };
 		68BCD72E53F553049B59966F /* NotchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F3142CC36AF7DC78A84382 /* NotchViewModel.swift */; };
 		742AC7E278088512395A859A /* NotchShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9DB4156292708BF23D0DA5 /* NotchShape.swift */; };
 		77B8808A57DB9ADF084605FB /* BatteryMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06226DB4B27295059A8487 /* BatteryMonitor.swift */; };
@@ -33,6 +35,7 @@
 		9F546B105A2C720B74FC7D34 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A99B15D01B0F80F6DE0D8C /* SettingsView.swift */; };
 		A8D563896C1996A8A5E0D91C /* GlassPulseRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 891388B9584DF225E041B69D /* GlassPulseRenderer.swift */; };
 		AF33BEA83F8DE85F0F46CF04 /* NowPlayingNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6DE990B652FD5B003CACDE /* NowPlayingNotificationView.swift */; };
+		B70CAFEBB2416E25B0FFED97 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = C48F9D3C512A0ABE8369D0F4 /* Sparkle */; };
 		BF08FF5BC0500475659B3BDB /* BatteryNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200F20B5FB8D82FE6DBB6CD8 /* BatteryNotificationView.swift */; };
 		C55B17803DB9DAE373B9A4C7 /* BluetoothNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11720B1A79E6F8C38BAE7B7B /* BluetoothNotificationView.swift */; };
 		CEA0A8FF66046FEFA80FAC0C /* GlintApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CB74659D174004C620D538A /* GlintApp.swift */; };
@@ -70,6 +73,7 @@
 		5DFA56EA877D6E5C1C2FD4A4 /* EnergyRingRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyRingRenderer.swift; sourceTree = "<group>"; };
 		5E6DE990B652FD5B003CACDE /* NowPlayingNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingNotificationView.swift; sourceTree = "<group>"; };
 		5FAD7D70E1D57697B0E0817D /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
+		6DFB588ABB5C25D8A4C8ECF3 /* CatalogArtworkFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogArtworkFetcher.swift; sourceTree = "<group>"; };
 		7CB74659D174004C620D538A /* GlintApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlintApp.swift; sourceTree = "<group>"; };
 		873BA54F54165E212EDBACFC /* ArtworkColorExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkColorExtractor.swift; sourceTree = "<group>"; };
 		891388B9584DF225E041B69D /* GlassPulseRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassPulseRenderer.swift; sourceTree = "<group>"; };
@@ -89,7 +93,19 @@
 		EA2921D5AC7DA3E1E16C1128 /* ArtworkCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkCache.swift; sourceTree = "<group>"; };
 		F32CA9FD52B5584B8AD7E79B /* AudioSpectrumAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSpectrumAnalyzer.swift; sourceTree = "<group>"; };
 		F5A69ACF962AEDE189F98649 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		FFAE8C888FFB1CBC1BF720CB /* UpdateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		98BEE1CADB909FBA0A70E63B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B70CAFEBB2416E25B0FFED97 /* Sparkle in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		03056706DEE0B10DB85CB8A2 /* Renderers */ = {
@@ -212,6 +228,7 @@
 				9F2A643317C8E18322EB9101 /* AccessibilityTrust.swift */,
 				7CB74659D174004C620D538A /* GlintApp.swift */,
 				5FAD7D70E1D57697B0E0817D /* Preferences.swift */,
+				FFAE8C888FFB1CBC1BF720CB /* UpdateController.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -230,6 +247,7 @@
 			children = (
 				EA2921D5AC7DA3E1E16C1128 /* ArtworkCache.swift */,
 				873BA54F54165E212EDBACFC /* ArtworkColorExtractor.swift */,
+				6DFB588ABB5C25D8A4C8ECF3 /* CatalogArtworkFetcher.swift */,
 				8A70DE6C17ED12653BB02EEC /* MusicPlayerService.swift */,
 			);
 			path = Music;
@@ -260,6 +278,7 @@
 			buildPhases = (
 				86AD9E59837D6EEC7E56E0F0 /* Sources */,
 				15DB57E4B5291059A1FB8D4A /* Resources */,
+				98BEE1CADB909FBA0A70E63B /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -267,6 +286,7 @@
 			);
 			name = Glint;
 			packageProductDependencies = (
+				C48F9D3C512A0ABE8369D0F4 /* Sparkle */,
 			);
 			productName = Glint;
 			productReference = 3E2E78BBA22734DD486C760B /* Glint.app */;
@@ -296,6 +316,9 @@
 			);
 			mainGroup = EA6921C9B6CB486D18C07534;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				FEAC39831D8EC0378E8FA834 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F0DEBFD467843DF4F582D172 /* Products */;
 			projectDirPath = "";
@@ -334,6 +357,7 @@
 				C55B17803DB9DAE373B9A4C7 /* BluetoothNotificationView.swift in Sources */,
 				51D0E9648B65EA81C740BC43 /* BrightnessHUDView.swift in Sources */,
 				11F5F56DAD8C6CF78FD79BA9 /* BrightnessMonitor.swift in Sources */,
+				6502FE5E6F4F98D85869169F /* CatalogArtworkFetcher.swift in Sources */,
 				E30C4E870A91DE6A8CBDF10F /* CenterEqualizerRenderer.swift in Sources */,
 				63C68625AF3EE0720B446A0D /* CompactMusicView.swift in Sources */,
 				F8C6D9E93A9284726F3CC29C /* EnergyRingRenderer.swift in Sources */,
@@ -353,6 +377,7 @@
 				0077EF98BB4A62F705AA5200 /* PremiumVisualizerView.swift in Sources */,
 				9F546B105A2C720B74FC7D34 /* SettingsView.swift in Sources */,
 				1DDC54CFD52CCF0E6B59B75C /* SpectrumRenderer.swift in Sources */,
+				0465987432ED74C19A6C3247 /* UpdateController.swift in Sources */,
 				0D0C6509026CD9851FFBED81 /* VisualizerModels.swift in Sources */,
 				80A24DC6A7E900BB39541760 /* VisualizerRenderer.swift in Sources */,
 				F65F3A416442EB3820577C36 /* VisualizerSettingsManager.swift in Sources */,
@@ -373,6 +398,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = VB36X5XLGX;
 				ENABLE_HARDENED_RUNTIME = NO;
 				INFOPLIST_FILE = Glint/Resources/Info.plist;
@@ -381,6 +407,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rutav.Glint;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
@@ -458,6 +485,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = VB36X5XLGX;
 				ENABLE_HARDENED_RUNTIME = NO;
 				INFOPLIST_FILE = Glint/Resources/Info.plist;
@@ -466,6 +494,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rutav.Glint;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
@@ -550,6 +579,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FEAC39831D8EC0378E8FA834 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.10.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C48F9D3C512A0ABE8369D0F4 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FEAC39831D8EC0378E8FA834 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BE6DB378EC4FB00E8DB46BA7 /* Project object */;
 }

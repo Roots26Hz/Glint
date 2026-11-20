@@ -31,6 +31,7 @@ private struct MenuBarPanel: View {
     @AppStorage(Preferences.hoverDelayKey) private var hoverDelay = 0.2
     @AppStorage(Preferences.notificationDurationKey) private var notificationDuration = 3.5
     @AppStorage(Preferences.lowBatteryThresholdKey) private var lowBatteryThreshold = 20
+    @ObservedObject private var updates = UpdateController.shared
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -82,6 +83,10 @@ private struct MenuBarPanel: View {
 
             Divider()
 
+            if let version = updates.pendingUpdateVersion {
+                updateAvailableRow(version)
+            }
+
             HStack(spacing: 10) {
                 SettingsLink {
                     Label("More Settings…", systemImage: "gearshape.fill")
@@ -90,6 +95,17 @@ private struct MenuBarPanel: View {
                 .keyboardShortcut(",")
                 .controlSize(.large)
                 .buttonStyle(.borderedProminent)
+
+                Button {
+                    updates.checkForUpdates()
+                } label: {
+                    Image(systemName: "arrow.down.circle")
+                        .frame(width: 18, height: 18)
+                }
+                .controlSize(.large)
+                .buttonStyle(.bordered)
+                .disabled(!updates.canCheckForUpdates)
+                .help("Check for Updates…")
 
                 Button {
                     NSApp.terminate(nil)
@@ -120,10 +136,36 @@ private struct MenuBarPanel: View {
                     .foregroundStyle(.secondary)
             }
             Spacer()
-            Text("v1.0")
+            Text("v\(updates.currentVersion)")
                 .font(.system(size: 10, weight: .medium, design: .monospaced))
                 .foregroundStyle(.secondary)
         }
+    }
+
+    /// Gentle reminder from a scheduled check; opens Sparkle's update window.
+    private func updateAvailableRow(_ version: String) -> some View {
+        Button {
+            updates.checkForUpdates()
+        } label: {
+            HStack(spacing: 10) {
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(Color.green.gradient)
+                    .frame(width: 24, height: 24)
+                    .overlay {
+                        Image(systemName: "arrow.down")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.white)
+                    }
+                Text("Glint \(version) is available")
+                    .font(.system(size: 12.5))
+                Spacer()
+                Text("Update…")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(.secondary)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 
     private func switchRow(
@@ -205,6 +247,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Preferences.register()
+        // Starts Sparkle, which schedules the daily update check.
+        _ = UpdateController.shared
 
         let music = MusicPlayerService()
         let battery = BatteryMonitor()

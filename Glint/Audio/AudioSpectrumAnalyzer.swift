@@ -11,12 +11,30 @@ struct SpectrumData: Equatable {
     var beatImpulse: Float
     static let empty = SpectrumData(levels: [Float](repeating: 0, count: 16), bassEnergy: 0, midEnergy: 0, trebleEnergy: 0, beatImpulse: 0)
     
+    /// The bands resampled to `count` bars spanning the whole spectrum:
+    /// fewer bars average neighbouring bands, more bars repeat them. Always
+    /// returns exactly `count` values, so renderers can index any bar count.
     func levels(for count: Int) -> [Float] {
-        if count == 8 && levels.count == 16 {
-            return (0..<8).map { (levels[$0 * 2] + levels[$0 * 2 + 1]) / 2.0 }
+        guard count > 0 else { return [] }
+        guard !levels.isEmpty else { return [Float](repeating: 0, count: count) }
+        if count == levels.count { return levels }
+        return (0..<count).map { bar in
+            let start = bar * levels.count / count
+            let end = max(start + 1, (bar + 1) * levels.count / count)
+            let slice = levels[start..<min(end, levels.count)]
+            return slice.reduce(0, +) / Float(slice.count)
         }
-        return levels
     }
+}
+
+/// Timeouts for the audio-reactive visualizer, kept in one place.
+enum VisualizerTiming {
+    /// How long a playback request may take to produce audible audio before
+    /// the notch switches to the animated visualizer.
+    static let playbackStartTimeout: TimeInterval = 4
+    /// How long a playing track may go silent (buffering, a stalled stream)
+    /// before the notch switches to the animated visualizer.
+    static let audioStallTimeout: TimeInterval = 4
 }
 
 /// Captures Apple Music's audio output through a Core Audio process tap and
@@ -25,34 +43,62 @@ struct SpectrumData: Equatable {
 /// (NSAudioCaptureUsageDescription); while capturing, macOS shows its
 /// recording indicator in the menu bar.
 ///
-/// Everything fails soft: if Music isn't running, any Core Audio step errors,
-/// or the permission is denied (the tap then delivers pure silence),
-/// `isCapturing` drops to false and the UI falls back to the procedural
+/// Everything fails soft: if Music isn't running or any Core Audio step
+/// errors, `isCapturing` stays false and the UI shows the procedural
 /// visualizer animation.
+///
+/// A running tap doesn't mean audio is flowing: a stream can still be
+/// buffering, playback can be stuck, or the permission can be denied (the tap
+/// then delivers pure silence). `source` tracks that, and a watchdog switches
+/// the bars to the animated visualizer when no audio arrives within
+/// `VisualizerTiming`'s limits, then back once it does. The tap keeps running
+/// meanwhile, so late audio is picked up without restarting anything.
 @MainActor
 final class AudioSpectrumAnalyzer: ObservableObject {
     nonisolated static let bandCount = 16
 
+    enum Source: Equatable {
+        /// Playback was requested; waiting for the first audible audio.
+        case waiting
+        /// Audio is flowing and drives the bars.
+        case live
+        /// No audio within the timeout; the animated visualizer stands in
+        /// until audio arrives.
+        case fallback
+    }
+
     @Published private(set) var data = SpectrumData.empty
     @Published private(set) var isCapturing = false
+    @Published private(set) var source = Source.waiting
+
+    /// Whether the bars should follow the captured audio rather than the
+    /// animated visualizer.
+    var isAudioReactive: Bool { isCapturing && source != .fallback }
 
     private var tapID = AudioObjectID(kAudioObjectUnknown)
     private var aggregateID = AudioObjectID(kAudioObjectUnknown)
     private var ioProcID: AudioDeviceIOProcID?
     private var processor: SpectrumProcessor?
     private let dspQueue = DispatchQueue(label: "com.rutav.Glint.spectrum", qos: .userInteractive)
-    /// Distinguishes silence-because-denied from a stop that already happened.
+    /// Bumped on every teardown, so callbacks from an earlier tap are ignored.
     private var session = 0
     private var startRetryWorkItem: DispatchWorkItem?
+    /// The single playback watchdog; runs only while the tap does.
+    private var watchdog: Timer?
+    /// System uptime when the current playback request began.
+    private var waitingSince: TimeInterval = 0
+    /// System uptime of the last audible audio from the tap.
+    private var lastAudible: TimeInterval = 0
 
     func start(bundleID: String, retryCount: Int = 0) {
         guard ioProcID == nil else { return }
         
         startRetryWorkItem?.cancel()
-        
-        // Ensure the system prompts the user for Screen/Audio Recording permission,
-        // which is required for CoreAudio process taps.
-        _ = CGRequestScreenCaptureAccess()
+
+        // No permission request here: starting the tap's aggregate device
+        // below makes macOS ask for System Audio Recording (the
+        // NSAudioCaptureUsageDescription prompt) the first time. Process taps
+        // don't need Screen Recording, so never request it.
 
         guard
             let pid = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
@@ -104,12 +150,14 @@ final class AudioSpectrumAnalyzer: ObservableObject {
         }
         self.aggregateID = aggregateID
 
+        let session = session
         let processor = SpectrumProcessor(
             sampleRate: Self.tapSampleRate(of: tapID) ?? 48_000
-        ) { [weak self] data in
+        ) { [weak self] data, audible in
             DispatchQueue.main.async {
-                guard let self, self.isCapturing else { return }
+                guard let self, self.isCapturing, self.session == session else { return }
                 self.data = data
+                if audible { self.noteAudible() }
             }
         }
         self.processor = processor
@@ -124,7 +172,8 @@ final class AudioSpectrumAnalyzer: ObservableObject {
         }
         self.ioProcID = ioProcID
         isCapturing = true
-        scheduleDenialCheck()
+        lastAudible = 0
+        armWatchdog()
     }
 
     func stop() {
@@ -134,9 +183,18 @@ final class AudioSpectrumAnalyzer: ObservableObject {
         data = .empty
     }
 
+    /// A new play, skip or track change: give the new audio a fresh start-up
+    /// window before falling back to the animated visualizer. Before the tap
+    /// is running this does nothing; `start` arms the watchdog itself.
+    func playbackRequested() {
+        guard isCapturing else { return }
+        armWatchdog()
+    }
+
     deinit {
         // Best-effort release of the tap if the owning view vanished without
         // onDisappear (properties are safe to touch from deinit here).
+        watchdog?.invalidate()
         if let ioProcID {
             AudioDeviceStop(aggregateID, ioProcID)
             AudioDeviceDestroyIOProcID(aggregateID, ioProcID)
@@ -151,6 +209,8 @@ final class AudioSpectrumAnalyzer: ObservableObject {
 
     private func teardown() {
         session += 1
+        watchdog?.invalidate()
+        watchdog = nil
         if let ioProcID {
             AudioDeviceStop(aggregateID, ioProcID)
             AudioDeviceDestroyIOProcID(aggregateID, ioProcID)
@@ -167,22 +227,48 @@ final class AudioSpectrumAnalyzer: ObservableObject {
         processor = nil
     }
 
-    /// A denied permission doesn't error — the tap just delivers silence.
-    /// If nothing audible has arrived a few seconds into playback, treat the
-    /// capture as unavailable so the UI falls back to the animated bars.
-    private func scheduleDenialCheck() {
-        let session = session
-        let processor = processor
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
-            guard let self, self.session == session, let processor else { return }
-            self.dspQueue.async {
-                let heard = processor.everHeardAudio
-                DispatchQueue.main.async {
-                    guard self.session == session, !heard else { return }
-                    self.stop()
-                }
-            }
+    // MARK: - Playback watchdog
+
+    /// Starts a playback start-up window. Audio that is already flowing (a
+    /// track change mid-stream) stays live; the stall check covers it.
+    private func armWatchdog() {
+        let now = ProcessInfo.processInfo.systemUptime
+        waitingSince = now
+        if now - lastAudible > 0.5 {
+            setSource(.waiting)
         }
+        guard watchdog == nil else { return }
+        let timer = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated { self?.checkWatchdog() }
+        }
+        timer.tolerance = 0.2
+        RunLoop.main.add(timer, forMode: .common)
+        watchdog = timer
+    }
+
+    private func checkWatchdog() {
+        let now = ProcessInfo.processInfo.systemUptime
+        switch source {
+        case .waiting where now - waitingSince >= VisualizerTiming.playbackStartTimeout:
+            setSource(.fallback)
+        case .live where now - lastAudible >= VisualizerTiming.audioStallTimeout:
+            setSource(.fallback)
+        default:
+            break
+        }
+    }
+
+    private func noteAudible() {
+        lastAudible = ProcessInfo.processInfo.systemUptime
+        if source != .live {
+            setSource(.live)
+        }
+    }
+
+    private func setSource(_ newSource: Source) {
+        guard source != newSource else { return }
+        NSLog("Glint visualizer: \(source) → \(newSource)")
+        source = newSource
     }
 
     // MARK: - Core Audio lookups
@@ -242,8 +328,8 @@ final class AudioSpectrumAnalyzer: ObservableObject {
     }
 }
 
-/// FFT and band mapping. Confined to the analyzer's DSP queue — the IO block
-/// and `everHeardAudio` reads both run there.
+/// FFT and band mapping. Confined to the analyzer's DSP queue, where the IO
+/// block runs.
 private final class SpectrumProcessor {
     private static let fftSize = 1024
     private static let hopSize = 512
@@ -257,10 +343,16 @@ private final class SpectrumProcessor {
         }
     }()
 
-    private(set) var everHeardAudio = false
+    /// Peak sample level above which a frame counts as actual audio rather
+    /// than the silence a stalled stream or a denied permission delivers.
+    private static let audibleThreshold: Float = 0.001
+
+    /// Whether any frame since the last emission was audible.
+    private var heardSinceEmit = false
 
     private let sampleRate: Float
-    private let onLevels: (SpectrumData) -> Void
+    /// Called with the smoothed levels and whether audio was heard.
+    private let onLevels: (SpectrumData, Bool) -> Void
     private let dftSetup: vDSP_DFT_Setup?
     private let hannWindow: [Float]
 
@@ -281,7 +373,7 @@ private final class SpectrumProcessor {
     private var peakDB: Float = -12
     private var lastEmit = Date.distantPast
 
-    init(sampleRate: Float, onLevels: @escaping (SpectrumData) -> Void) {
+    init(sampleRate: Float, onLevels: @escaping (SpectrumData, Bool) -> Void) {
         self.sampleRate = sampleRate
         self.onLevels = onLevels
         dftSetup = vDSP_DFT_zrop_CreateSetup(nil, vDSP_Length(Self.fftSize), .FORWARD)
@@ -342,8 +434,8 @@ private final class SpectrumProcessor {
 
         var peakSample: Float = 0
         vDSP_maxmgv(samples, 1, &peakSample, vDSP_Length(Self.fftSize))
-        if peakSample > 0.001 {
-            everHeardAudio = true
+        if peakSample > Self.audibleThreshold {
+            heardSinceEmit = true
         }
 
         vDSP_vmul(samples, 1, hannWindow, 1, windowed, 1, vDSP_Length(Self.fftSize))
@@ -395,7 +487,8 @@ private final class SpectrumProcessor {
         let now = Date()
         if now.timeIntervalSince(lastEmit) >= 1.0 / 86.0 {
             lastEmit = now
-            onLevels(SpectrumData(levels: smoothed, bassEnergy: bass, midEnergy: mid, trebleEnergy: treble, beatImpulse: impulse))
+            onLevels(SpectrumData(levels: smoothed, bassEnergy: bass, midEnergy: mid, trebleEnergy: treble, beatImpulse: impulse), heardSinceEmit)
+            heardSinceEmit = false
         }
     }
 }

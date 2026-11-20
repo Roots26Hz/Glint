@@ -18,7 +18,10 @@ struct PremiumVisualizerView: View {
         TimelineView(.animation(minimumInterval: 1.0 / Double(activeSettings.fpsLimit), paused: !isPlaying && !activeSettings.idleAnimation)) { timeline in
             Canvas { context, size in
                 let t = timeline.date.timeIntervalSinceReferenceDate
-                let data = analyzer.isCapturing ? analyzer.data : simulatedData(time: t)
+                // Live audio while it flows (or while a play request is still
+                // starting up); the animated bars when there is no tap or the
+                // playback watchdog timed out.
+                let data = analyzer.isAudioReactive ? analyzer.data : simulatedData(time: t)
                  
                 var renderer = renderer(for: activeSettings.style, settings: activeSettings)
                 

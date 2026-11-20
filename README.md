@@ -17,7 +17,7 @@
 
 ![Menu bar app](https://img.shields.io/badge/lives_in-the_menu_bar-222?style=flat-square)
 ![No telemetry](https://img.shields.io/badge/telemetry-absolutely_none-3BF5A6?style=flat-square)
-![Version](https://img.shields.io/badge/version-1.0-4FD8FF?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.1-4FD8FF?style=flat-square)
 
 **[✨ Features](#-features) · [📸 Screenshots](#-screenshots) · [💿 Install](#-installation) · [🎮 Usage](#-usage) · [🛠 Requirements](#-requirements) · [🧪 Built with](#-technologies-used)**
 
@@ -57,7 +57,8 @@ It runs entirely from the menu bar, keeps **zero telemetry**, and greets you wit
 - **Menu‑bar control panel** — a mini control center: switches for every module, live sliders (hover delay, notification duration, low‑battery threshold), a soundwave‑style picker, and a **More Settings…** button.
 - **Launch greeting** — a premium neon **glint** signature writes itself in on every launch, then dissolves.
 - **Dock icon on demand** — Glint runs invisibly; open Settings and a Dock icon appears, close it and it vanishes.
-- **Zero telemetry** — no analytics, no network calls. The equalizer FFT runs locally; nothing is stored or sent anywhere.
+- **In‑app updates** — Glint checks its GitHub releases once a day (or on demand) and installs new versions in place, after verifying every update's cryptographic signature.
+- **Zero telemetry** — no analytics, no tracking, nothing stored. The equalizer FFT runs locally. Glint goes online for just two things: checking GitHub for updates (can be turned off in Settings) and fetching album artwork from Apple's public catalog when Apple Music doesn't provide it — that lookup sends only the track, artist, and album name.
 
 ---
 
@@ -93,9 +94,9 @@ It runs entirely from the menu bar, keeps **zero telemetry**, and greets you wit
 > [!IMPORTANT]
 > **Important Note:** We do not currently have a verified Apple Developer account, so the Glint application will be blocked by macOS on its first launch. To bypass this, you need to open the app by clicking **"Open Anyway"** in **Privacy & Security** under macOS Settings.
 >
-> Please be reassured that all permissions required for Glint are completely local. **Glint does not collect any user data or send any information anywhere.** Building from source skips Gatekeeper entirely.
+> Please be reassured that all permissions required for Glint are completely local. **Glint does not collect any user data.** This step is only needed once: later versions install from inside Glint.
 
-1. **Download** `Glint-1.0.dmg` from the [releases page](../../releases), open it, and drag **Glint** onto **Applications**.
+1. **Download** [`Glint.dmg`](../../releases/latest/download/Glint.dmg) (always the latest version), open it, and drag **Glint** onto **Applications**.
 2. **Open** Glint from Applications. macOS refuses *("cannot be opened" / "could not verify it is free of malware")*. Click **Done** — ***not*** "Move to Trash".
 3. Open **System Settings → Privacy & Security**, scroll to the bottom, and click **"Open Anyway"** next to the Glint message, then confirm.
 4. **Open Glint again** — it launches normally from now on. Grant the four permissions it asks for (see [Requirements](#-requirements)).
@@ -108,22 +109,12 @@ xattr -dr com.apple.quarantine /Applications/Glint.app
 ```
 </details>
 
-<details>
-<summary><b>🛠 Build from source</b> (skips Gatekeeper entirely)</summary>
+### 🔄 Updating
 
-Requires macOS 26, Xcode 26, and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
+From **1.1** on, Glint updates itself. It checks GitHub once a day and offers new versions with their release notes, or you can check any time: **menu‑bar icon → ↓** or **Settings → Updates → Check for Updates…**. Nothing installs without your OK. Every update is verified (EdDSA signature plus Apple code signature) before it's installed, and updates don't need the "Open Anyway" step again.
 
-```sh
-brew install xcodegen
-git clone https://github.com/Roots26Hz/iNotch.git
-cd iNotch
-xcodegen generate
-open Glint.xcodeproj   # then ⌘R
-```
-
-Package a signed release DMG (needs `create-dmg`): `scripts/package-dmg.sh`.
-The app icon and DMG artwork are **generated code** — `swift scripts/generate-icon.swift` and `swift scripts/generate-dmg-background.swift` re‑render them from `docs/GLINTLOGOANDARTWORK.png`.
-</details>
+> [!NOTE]
+> **Coming from 1.0?** Version 1.0 has no updater, so it can't tell you about new versions. Download **Glint 1.1** once from the [releases page](../../releases) and drag it onto **Applications**, replacing the old copy. Your settings and permissions carry over. Every version after 1.1 arrives automatically.
 
 ---
 
@@ -133,7 +124,7 @@ The app icon and DMG artwork are **generated code** — `swift scripts/generate-
 - **🔊 Volume / brightness keys** show the matching HUD in the notch. The system pill stays hidden by default (one toggle brings it back). Brightness reacts to key presses only.
 - **🎧 Connect a Bluetooth device** — name, icon, and battery level pop from the notch for a few seconds.
 - **🔋 Plug / unplug the charger** — a banner shows charge state; low‑battery, fully‑charged, and charge‑limit banners fire automatically.
-- **📋 Menu‑bar icon** (the *gl* monogram) → a control panel with every toggle and slider, plus **More Settings…** for the full window and Visualizer Studio.
+- **📋 Menu‑bar icon** (the soundwave) → a control panel with every toggle and slider, **More Settings…** for the full window and Visualizer Studio, and **↓** to check for updates.
 
 ---
 
@@ -150,13 +141,13 @@ On first launch macOS asks for four permissions. Every one is **read‑only or p
 | 🎵 **Automation (Music / Spotify)** | Play / pause / skip via AppleScript — the only automation it performs. |
 | 🎧 **Bluetooth** | Observe device connections for the notch banners. |
 | ♿️ **Accessibility** | Notice manual brightness/volume keys and hide the system pill. *Relaunch after granting.* |
-| 🎙 **System Audio Recording** | Feed the equalizer FFT. Denied → silently falls back to the animated visualizer. |
+| 🎙 **System Audio Recording** | Feed the equalizer FFT. Audio only: Glint never asks to record your screen. Denied → falls back to the animated visualizer. |
 
 ---
 
 ## 🧪 Technologies Used
 
-`SwiftUI` · `Liquid Glass (glassEffect / GlassEffectContainer / glassEffectID)` · `AppKit (NSPanel)` · `Core Audio (process tap + property listeners + FFT)` · `IOBluetooth` · `IOHIDManager` · `IOKit power sources` · `CGEvent taps` · `DisplayServices` · `AppleScript` · `XcodeGen`
+`SwiftUI` · `Liquid Glass (glassEffect / GlassEffectContainer / glassEffectID)` · `AppKit (NSPanel)` · `Core Audio (process tap + property listeners + FFT)` · `IOBluetooth` · `IOHIDManager` · `IOKit power sources` · `CGEvent taps` · `DisplayServices` · `AppleScript` · `Sparkle (EdDSA-signed updates)` · `XcodeGen`
 
 ---
 

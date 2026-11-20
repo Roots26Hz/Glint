@@ -42,7 +42,7 @@ export function DownloadSection() {
           </p>
 
           <a
-            href="https://github.com/Roots26Hz/Glint/releases/download/Glint/Glint-1.0.dmg"
+            href="https://github.com/Roots26Hz/Glint/releases/latest/download/Glint.dmg"
             onClick={handleDownloadTracking}
             className="group relative flex items-center gap-3 bg-white text-black px-8 py-4 rounded-full font-semibold text-lg hover:scale-105 transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:shadow-[0_0_60px_rgba(255,255,255,0.4)] w-full sm:w-auto justify-center"
           >
@@ -59,7 +59,7 @@ export function DownloadSection() {
             <div className="hidden sm:block w-1 h-1 bg-white/20 rounded-full" />
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4" />
-              Version 1.0 (5.7 MB)
+              Latest version · updates in-app
             </div>
           </div>
         </motion.div>
